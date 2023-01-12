@@ -1,0 +1,11 @@
+version: '3.3'
+services:
+ svapp:
+  restart: always
+  build:
+   context: .
+   dockerfile: dockerfiles/docker_sva.conf
+  command: python ./main.py
+  volumes:
+   - ../code_save_video_app:/code_app
+   - ../media/archive:/code_app/media_files
