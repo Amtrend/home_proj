@@ -4,8 +4,8 @@
 {% block content %}
     <section id="archive_page">
         <div class="archive_page">
-            <p class="title_archive_camera">{{ localtime }}</p>
-            <p class="title_archive_camera">{{ localtime|date:"d.m.Y H:i:s" }}</p>
+            <p class="title_archive_camera">{% now "d.m.Y H:i:s" as cur %}</p>
+            <p class="title_archive_camera">{{ cur }}</p>
             <p class="title_archive_camera">{{ cur_dt }}</p>
             <p class="title_archive_camera">{{ cur_dt|date:"d.m.Y H:i:s" }}</p>
             <p class="title_archive_camera">Камера на входной группе</p>
