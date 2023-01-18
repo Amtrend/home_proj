@@ -133,8 +133,8 @@ ready(() => {
 
     let videoCamEntrance = document.getElementById('cam_entrance_video');
     if (videoCamEntrance) {
-        console.log(window.location.origin + 'media/stream/cam_entrance/streaming.m3u8');
-        let pathToStream = window.location.origin + 'media/stream/cam_entrance/streaming.m3u8';
+        console.log(window.location.origin + '/media/stream/cam_entrance/streaming.m3u8');
+        let pathToStream = window.location.origin + '/media/stream/cam_entrance/streaming.m3u8';
         if(Hls.isSupported()) {
             let hls = new Hls();
             hls.on(Hls.Events.Error, function (event, data) {
