@@ -42,7 +42,7 @@ def main(rtsp_link, path_to_save, video_length, size_limit):
     save_video_proc = subprocess.run(command, shell=True, capture_output=True)
     if save_video_proc.returncode == 0:
         worker_db = WorkDb()
-        falepath_to_db = os.path.join(r'/archive/cam_entrance', file_name)
+        falepath_to_db = os.path.join(r'archive/cam_entrance', file_name)
         worker_db.create_video_recording(title=file_name, path=falepath_to_db, start_record=start_recording)
     else:
         logger.debug(f"Ошибка при сохранении видео {file_name}: {save_video_proc.stdout}")
