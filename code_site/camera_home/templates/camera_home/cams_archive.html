@@ -4,6 +4,10 @@
 {% block content %}
     <section id="archive_page">
         <div class="archive_page">
+            <p class="title_archive_camera">{{ localtime }}</p>
+            <p class="title_archive_camera">{{ localtime|date:"d.m.Y H:i:s" }}</p>
+            <p class="title_archive_camera">{{ cur_dt }}</p>
+            <p class="title_archive_camera">{{ cur_dt|date:"d.m.Y H:i:s" }}</p>
             <p class="title_archive_camera">Камера на входной группе</p>
             <div class="arch_cam_videos_blocks">
                 {% for ce_video in ce_videos %}
