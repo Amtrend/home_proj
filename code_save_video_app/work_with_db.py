@@ -1,6 +1,5 @@
 import mysql.connector
 from main_variables import logger, USER, PASSWORD, HOST, DATABASE
-import datetime
 
 
 class WorkDb:
@@ -18,7 +17,7 @@ class WorkDb:
             logger.debug(f"Ошибка при подключении к бд: {e}")
         return cnx
 
-    def create_video_recording(self, title, path, start_record, created_at=datetime.datetime.now()):
+    def create_video_recording(self, title, path, start_record, created_at):
         cnx = self.connect_db()
         try:
             if cnx:
