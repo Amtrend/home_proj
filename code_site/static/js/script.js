@@ -131,28 +131,28 @@ ready(() => {
         }
     }
 
-    let videoCamEntrance = document.getElementById('cam_entrance_video');
-    if (videoCamEntrance) {
-        if(Hls.isSupported()) {
-            let hls = new Hls();
-            hls.on(Hls.Events.Error, function (event, data) {
-                console.log("HLS error: ", event, data);
-            });
-            hls.attachMedia(videoCamEntrance);
-            hls.on(Hls.Events.MEDIA_ATTACHED, function() {
-                hls.loadSource('media/stream/cam_entrance/streaming.m3u8');
-                hls.on(Hls.Events.MANIFEST_PARSED,function() {
-                    videoCamEntrance.play();
-                });
-            });
-        }
-        else if (videoCamEntrance.canPlayType('application/vnd.apple.mpegurl')) {
-            videoCamEntrance.src = 'media/stream/cam_entrance/streaming.m3u8';
-            videoCamEntrance.addEventListener('loadedmetadata',function() {
-                videoCamEntrance.play();
-            });
-        }
-    }
+    // let videoCamEntrance = document.getElementById('cam_entrance_video');
+    // if (videoCamEntrance) {
+    //     if(Hls.isSupported()) {
+    //         let hls = new Hls();
+    //         hls.on(Hls.Events.Error, function (event, data) {
+    //             console.log("HLS error: ", event, data);
+    //         });
+    //         hls.attachMedia(videoCamEntrance);
+    //         hls.on(Hls.Events.MEDIA_ATTACHED, function() {
+    //             hls.loadSource('media/stream/cam_entrance/streaming.m3u8');
+    //             hls.on(Hls.Events.MANIFEST_PARSED,function() {
+    //                 videoCamEntrance.play();
+    //             });
+    //         });
+    //     }
+    //     else if (videoCamEntrance.canPlayType('application/vnd.apple.mpegurl')) {
+    //         videoCamEntrance.src = 'media/stream/cam_entrance/streaming.m3u8';
+    //         videoCamEntrance.addEventListener('loadedmetadata',function() {
+    //             videoCamEntrance.play();
+    //         });
+    //     }
+    // }
 
 
 });
