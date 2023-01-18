@@ -24,8 +24,8 @@ class WorkDb:
             if cnx:
                 cursor = cnx.cursor()
                 cursor.execute(f"""
-                    INSERT INTO camera_home_cameraentrancesavevideos (title, video, created_at, start_recording) VALUES (%s, %s, %s, %s);
-                """, (title, path, created_at, start_record))
+                    INSERT INTO camera_home_cameraentrancesavevideos (title, video, start_recording, created_at) VALUES (%s, %s, %s, %s);
+                """, (title, path, start_record, created_at))
                 cnx.commit()
         except mysql.connector.Error as e:
             logger.debug(f"Ошибка при создании записи с новым видео в бд: {e}")
