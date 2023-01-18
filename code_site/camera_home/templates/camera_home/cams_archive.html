@@ -13,6 +13,7 @@
                 {% for ce_video in ce_videos %}
                     <div class="arch_cam_video_block">
                         <p class="arch_cam_video_block-title">{{ ce_video.start_recording|date:"d.m.Y H:i:s" }} - {{ ce_video.created_at|date:"H:i:s" }}</p>
+                        <p class="arch_cam_video_block-title">{{ ce_video.start_recording }} - {{ ce_video.created_at }}</p>
                         <video class="arch_cam_video_block-video" controls muted>
                             <source src="{% url 'stream_video' ce_video.id  %}" type="video/mp4"/>
                         </video>
