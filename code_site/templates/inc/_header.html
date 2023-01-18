@@ -1,0 +1,34 @@
+{% load static %}
+<section id="header">
+    <div class="header-desktop">
+        <div class="logo_block">
+            {% if request.path != "/" %}
+                <a href="{{ request.META.HTTP_REFERER }}" class="logout_link"><p class="menu_text">&larr;&nbsp;Назад</p></a>
+            {% endif %}
+            <a href="{% url 'logout' %}" class="logout_link logout_link_true"><p class="menu_text">Выйти</p></a>
+        </div>
+    </div>
+    <div class="header-mobile">
+        <div class="logo_block-mobile">
+            <div class="nav_icon-mobile">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <a href="{% url 'home' %}" class="title_link-mobile"><p>мой дом</p></a>
+        </div>
+        <div class="menu_block-mobile">
+            {% if request.user.is_superuser %}
+                <a href="{% url 'livecams_feed' %}" class="menu_link-mobile"><p class="menu_text">Онлайн трансляция</p></a>
+                <a href="{% url 'cams_archive' %}" class="menu_link-mobile"><p class="menu_text">Архив</p></a>
+                <a href="{% url 'settings' %}" class="menu_link-mobile"><p class="menu_text">Настройки</p></a>
+                <a href="{% url 'logout' %}" class="menu_link-mobile"><p class="menu_text">Выйти</p></a>
+            {% else %}
+                <a href="{% url 'livecams_feed' %}" class="menu_link-mobile"><p class="menu_text">Онлайн трансляция</p></a>
+                <a href="{% url 'cams_archive' %}" class="menu_link-mobile"><p class="menu_text">Архив</p></a>
+                <a href="{% url 'logout' %}" class="menu_link-mobile"><p class="menu_text">Выйти</p></a>
+            {% endif %}
+        </div>
+    </div>
+</section>

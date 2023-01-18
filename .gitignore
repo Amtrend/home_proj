@@ -1,4 +1,4 @@
 /venv/
 .idea/
-/code_save_video_app/main_no_prod.py
 /config/.env
+/db/initdb/initial.sql

@@ -1,24 +1,50 @@
 #!/usr/bin/env python
-import cv2
+import subprocess
 import datetime
 import os
-
+import logging.config
+from work_with_db import WorkDb
 
 RTSP_LINK = os.environ.get("RTSP_LINK")
 PATH_TO_SAVE = os.environ.get("PATH_TO_SAVE")
-SIZE_LIMIT_OF_DIR = os.environ.get("SIZE_LIMIT_OF_DIR")
+SIZE_LIMIT_OF_DIR = int(os.environ.get("SIZE_LIMIT_OF_DIR"))
 VIDEO_LENGTH = os.environ.get("VIDEO_LENGTH")
+LOGS = r"/code_app/logs"
+LOGGING_CONFIG = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'default_formatter': {
+            'format': '%(asctime)s : [%(levelname)s] : %(message)s',
+            'datefmt': '%d-%b-%y %H:%M:%S',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': f'{LOGS}/{datetime.datetime.now().strftime("%d-%m-%Y_%H-%M-%S")}.txt',
+            'formatter': 'default_formatter',
+            'maxBytes': 1048576,
+            'backupCount': 10,
+        },
+    },
+    'loggers': {
+        'my_logger': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True
+        }
+    }
+}
+
+logging.config.dictConfig(LOGGING_CONFIG)
+logger = logging.getLogger('my_logger')
 
 
-def main(stream_link, target_path, size_limit, video_length):
-    cap = cv2.VideoCapture(stream_link)
-    frame_width = int(cap.get(3))
-    frame_height = int(cap.get(4))
-    frame_size = (frame_width, frame_height)
-    cur_date = datetime.datetime.now().strftime(f"%d_%m_%Y(%H_%M_%S)")
-    file_name = os.path.join(target_path, f'{cur_date}.mp4')
-    out = cv2.VideoWriter(file_name, cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), 20, frame_size)
-    cur_size = 0
+def check_dir(target_path, size_limit):
+    result = False
+    size = 0
     for dirpath, dirnames, filenames in os.walk(target_path):
         all_files = [os.path.join(target_path, file) for file in filenames]
         try:
@@ -27,24 +53,41 @@ def main(stream_link, target_path, size_limit, video_length):
             pass
         for f in filenames:
             fp = os.path.join(dirpath, f)
-            cur_size += os.path.getsize(fp)
-        if cur_size > size_limit:
-            os.remove(first_file)
-    i = 0
+            size += os.path.getsize(fp)
+        if size > size_limit:
+            result = True
+            try:
+                file_name = os.path.basename(first_file)
+                worker_db = WorkDb()
+                worker_db.delete_video_recording(name=file_name)
+                os.remove(first_file)
+            except Exception as e:
+                logger.debug(f"Ошибка при удалении файла {file_name} и записи из бд: {e}")
+    return result
+
+
+def main(rtsp_link, path_to_save, video_length, size_limit):
     while True:
-        ret, frame = cap.read()
-        out.write(frame)
-        i += 1
-        if i > (video_length * 20):
+        check_res = check_dir(target_path=path_to_save, size_limit=size_limit)
+        if not check_res:
             break
-    cap.release()
-    out.release()
-    cv2.destroyAllWindows()
+    start_recording = datetime.datetime.now()
+    file_name = f'{start_recording.strftime(f"%d_%m_%Y-%H_%M_%S")}.mp4'
+    file_path = os.path.join(path_to_save, file_name)
+    command = f"ffmpeg -t {video_length} -i {rtsp_link} -vcodec copy {file_path}"
+    save_video_proc = subprocess.run(command, shell=True, capture_output=True)
+    if save_video_proc.returncode == 0:
+        worker_db = WorkDb()
+        falepath_to_db = os.path.join(r'/archive/cam_entrance', file_name)
+        worker_db.create_video_recording(title=file_name, path=falepath_to_db, start_record=start_recording)
+    else:
+        logger.debug(f"Ошибка при сохранении видео {file_name}: {save_video_proc.stdout}")
 
 
 if __name__ == '__main__':
     while True:
         try:
-            main(stream_link=RTSP_LINK, target_path=PATH_TO_SAVE, size_limit=SIZE_LIMIT_OF_DIR, video_length=VIDEO_LENGTH)
-        except KeyboardInterrupt:
-            break
+            main(rtsp_link=RTSP_LINK, path_to_save=PATH_TO_SAVE, video_length=VIDEO_LENGTH,
+                 size_limit=SIZE_LIMIT_OF_DIR)
+        except Exception as e:
+            logger.debug(f"Ошибка при запуске скрипта: {e}")

@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Вход{% endblock %}
+{% block content %}
+    <section id="login">
+        <div class="login_block">
+            <p class="login_block-title">Вход</p>
+            <form action="{% url 'login' %}" method="post" id="login_form">
+                {% csrf_token %}
+                <div class="login_form-inputs">
+                    <label for="{{ form.username.id_for_label }}" class="login_form-input_label">Логин:</label>
+                    {{ form.username }}
+                    <label for="{{ form.password.id_for_label }}" class="login_form-input_label">Пароль:</label>
+                    <div class="login_form-pass_block">
+                        {{ form.password }}
+                        <p id="password-control"></p>
+                    </div>
+                </div>
+                <button type="submit" name="login_form_sbmt" class="login_form-sbmt" value="login_btn">Войти</button>
+                <p class="login_form-errors" id="login_form-errors"></p>
+            </form>
+        </div>
+    </section>
+{% endblock %}

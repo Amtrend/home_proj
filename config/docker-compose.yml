@@ -2,10 +2,87 @@ version: '3.3'
 services:
  svapp:
   restart: always
+  container_name: svapp
   build:
    context: .
    dockerfile: dockerfiles/docker_sva.conf
   command: python ./main.py
   volumes:
    - ../code_save_video_app:/code_app
-   - ../media/archive:/code_app/media_files
+   - ../media/archive/cam_entrance:/code_app/media_files
+   - ../logs/svapp:/code_app/logs
+  env_file:
+   - .env
+ csapp:
+  restart: always
+  container_name: csapp
+  build:
+   context: .
+   dockerfile: dockerfiles/docker_csa.conf
+  command: python ./main.py
+  volumes:
+   - ../code_stream_video_app:/code_app
+   - ../media/stream/cam_entrance:/code_app/media_files
+   - ../logs/csapp:/code_app/logs
+  env_file:
+   - .env
+ django:
+  restart: always
+  container_name: django
+  volumes:
+   - ../code_site:/code_site
+   - ../collect_static:/collect_static
+   - ../media:/media
+   - ./sock:/sock
+  build:
+   context: .
+   dockerfile: dockerfiles/docker_django.conf
+  command: uwsgi --ini /etc/uwsgi.ini
+  links:
+   - db
+  ports:
+   - "8001:8001"
+   - "8000:8000"
+  depends_on:
+   - db
+ nginx:
+  restart: always
+  container_name: nginx
+  volumes:
+   - ../collect_static:/collect_static
+   - ../media:/media_static
+   - ./sock:/sock
+  build:
+   context: .
+   dockerfile: dockerfiles/docker_nginx.conf
+  depends_on:
+   - django
+  ports:
+   - "80:80"
+   - "443:443"
+  entrypoint: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+ db:
+  image: mariadb
+  restart: always
+  container_name: db
+  env_file:
+   - .env
+  ports:
+   - "3306:3306"
+  volumes:
+   - ../db/initdb:/docker-entrypoint-initdb.d
+   - ../db/workdb:/var/lib/mysql
+ phpmyadmin:
+  image: phpmyadmin
+  container_name: phpmyadmin
+  links:
+   - db
+  environment:
+   PMA_ARBITARY: 1
+   PMA_HOST: db
+   PMA_PORT: 3306
+  restart: on-failure
+  ports:
+   - "8081:80"
+  depends_on:
+   - db

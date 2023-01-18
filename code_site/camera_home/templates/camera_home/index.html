@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Главная страница{% endblock %}
+{% block content %}
+    <section id="main_page">
+        <div class="main_page">
+            {% if request.user.is_superuser %}
+                <a href="{% url 'livecams_feed' %}" class="main_page-chapter_link"><p class="main_page-chapter_text">Онлайн трансляция</p></a>
+                <a href="{% url 'cams_archive' %}" class="main_page-chapter_link"><p class="main_page-chapter_text">Архив</p></a>
+                <a href="{% url 'settings' %}" class="main_page-chapter_link"><p class="main_page-chapter_text">Настройки</p></a>
+            {% else %}
+                <a href="{% url 'livecams_feed' %}" class="main_page-chapter_link"><p class="main_page-chapter_text">Онлайн трансляция</p></a>
+                <a href="{% url 'cams_archive' %}" class="main_page-chapter_link"><p class="main_page-chapter_text">Архив</p></a>
+            {% endif %}
+        </div>
+    </section>
+
+    {#    <video id="video-player" controls preload="none"></video>#}
+    {#		<script>#}
+    {#    			var video = document.getElementById('video-player');#}
+    {#    			if(Hls.isSupported()) {#}
+    {#    				var hls = new Hls();#}
+    {#    				hls.on(Hls.Events.Error, function (event, data) {#}
+    {#    					console.log("HLS error: ", event, data);#}
+    {#    				});#}
+    {#    				hls.attachMedia(video);#}
+    {#    				hls.on(Hls.Events.MEDIA_ATTACHED, function() {#}
+    {#    					hls.loadSource('media/stream/cam_entrance/streaming.m3u8');#}
+    {#    					hls.on(Hls.Events.MANIFEST_PARSED,function() {#}
+    {#    						video.play();#}
+    {#    					});#}
+    {#    				});#}
+    {#    			}#}
+    {#    			else if (video.canPlayType('application/vnd.apple.mpegurl')) {#}
+    {#    				video.src = 'media/stream/cam_entrance/streaming.m3u8';#}
+    {#    				video.addEventListener('loadedmetadata',function() {#}
+    {#    					video.play();#}
+    {#    				});#}
+    {#    			}#}
+    {#			console.log('ok rasp')#}
+    {#		</script>#}
+    {##}
+    {##}
+    {#    {% for t in test %}#}
+    {#        <video id="module_{{ t.id }}" playsinline controls crossorigin>#}
+    {#            <source src="{% url 'stream_video' t.id  %}" type="video/mp4"/>#}
+    {#        </video>#}
+    {#    {% endfor %}#}
+
+{% endblock %}
