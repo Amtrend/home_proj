@@ -1,13 +1,6 @@
 import mysql.connector
-import os
-from main import logger
+from main_variables import logger, USER, PASSWORD, HOST, DATABASE
 import datetime
-
-
-DATABASE = os.environ.get("MYSQL_DATABASE")
-HOST = "db"
-USER = os.environ.get("MYSQL_USER")
-PASSWORD = os.environ.get("MYSQL_PASSWORD")
 
 
 class WorkDb:
