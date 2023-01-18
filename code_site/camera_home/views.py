@@ -62,12 +62,9 @@ def livecams_feed_page(request):
 
 @login_required
 def cams_archive_page(request):
-    import datetime as dt
-    cur_dt = dt.datetime.now()
     ce_videos = CameraEntranceSaveVideos.objects.all()
     response_data = {
         "ce_videos": ce_videos,
-        "cur_dt": cur_dt,
     }
     if request.method == 'POST':
         if 'del_video_aus_yes' in request.POST:

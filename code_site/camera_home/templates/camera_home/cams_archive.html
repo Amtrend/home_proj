@@ -4,16 +4,11 @@
 {% block content %}
     <section id="archive_page">
         <div class="archive_page">
-            <p class="title_archive_camera">{% now "d.m.Y H:i:s" as cur %}</p>
-            <p class="title_archive_camera">{{ cur }}</p>
-            <p class="title_archive_camera">{{ cur_dt }}</p>
-            <p class="title_archive_camera">{{ cur_dt|date:"d.m.Y H:i:s" }}</p>
             <p class="title_archive_camera">Камера на входной группе</p>
             <div class="arch_cam_videos_blocks">
                 {% for ce_video in ce_videos %}
                     <div class="arch_cam_video_block">
                         <p class="arch_cam_video_block-title">{{ ce_video.start_recording|date:"d.m.Y H:i:s" }} - {{ ce_video.created_at|date:"H:i:s" }}</p>
-                        <p class="arch_cam_video_block-title">{{ ce_video.start_recording }} - {{ ce_video.created_at }}</p>
                         <video class="arch_cam_video_block-video" controls muted>
                             <source src="{% url 'stream_video' ce_video.id  %}" type="video/mp4"/>
                         </video>
