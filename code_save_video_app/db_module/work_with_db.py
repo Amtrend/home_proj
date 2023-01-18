@@ -1,6 +1,6 @@
 import mysql.connector
 import os
-from .main import logger
+from code_save_video_app.main import logger
 import datetime
 
 

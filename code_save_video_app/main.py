@@ -3,7 +3,7 @@ import subprocess
 import datetime
 import os
 import logging.config
-from .work_with_db import WorkDb
+from code_save_video_app.db_module.work_with_db import WorkDb
 
 RTSP_LINK = os.environ.get("RTSP_LINK")
 PATH_TO_SAVE = os.environ.get("PATH_TO_SAVE")
