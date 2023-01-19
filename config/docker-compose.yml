@@ -99,6 +99,6 @@ services:
    - ../code_alarm_app:/code_app
    - /dev/gpiomem:/dev/gpiomem
    - /dev/mem:/dev/mem
-   - /dev/gpiochip0:/dev/gpiochip0
   env_file:
    - .env
+  privileged: true
