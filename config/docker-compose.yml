@@ -99,4 +99,9 @@ services:
    - ../code_alarm_app:/code_app
   env_file:
    - .env
-  privileged: true
+  devices:
+    - /dev/gpiomem:/dev/gpiomem
+  cap_drop:
+    - ALL
+  cap_add:
+    - SYS_RAWIO
