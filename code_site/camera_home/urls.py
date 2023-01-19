@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import *
-from django.views.generic import TemplateView, RedirectView
+from django.views.generic import TemplateView
 from django.contrib.auth import views as auth_views
 
 
@@ -14,5 +14,4 @@ urlpatterns = [
     path('archive/<int:pk>/', streaming_video, name='stream_video'),
     path('download/<int:pk>/', download_video, name='download_video'),
     path('robots.txt', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
-    path('favicon.ico', RedirectView.as_view(url='static/img/favicon.ico'), name='favicon'),
 ]

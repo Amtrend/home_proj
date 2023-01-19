@@ -88,3 +88,15 @@ services:
    - "8081:80"
   depends_on:
    - db
+ caapp:
+  restart: always
+  container_name: caapp
+  build:
+   context: .
+   dockerfile: dockerfiles/docker_caa.conf
+  command: python ./main.py
+  volumes:
+   - ../code_alarm_app:/code_app
+   - /dev/gpiomem:/dev/gpiomem
+  env_file:
+   - .env
