@@ -97,8 +97,6 @@ services:
   command: python ./main.py
   volumes:
    - ../code_alarm_app:/code_app
-   - /dev/gpiomem:/dev/gpiomem
-   - /dev/mem:/dev/mem
   env_file:
    - .env
   privileged: true
