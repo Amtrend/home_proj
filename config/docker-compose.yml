@@ -26,8 +26,6 @@ services:
    - ../logs/csapp:/code_app/logs
   env_file:
    - .env
-  ports:
-   - "22:22"
  django:
   restart: always
   container_name: django
