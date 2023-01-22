@@ -108,6 +108,7 @@ services:
  redis:
   restart: always
   image: redis:alpine
+  container_name: redis
   ports:
    - "6379:6379"
   env_file:
@@ -118,6 +119,7 @@ services:
    - redis-server --requirepass "$${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}"
  celery:
   restart: always
+  container_name: celery
   build:
    context: .
    dockerfile: dockerfiles/docker_celery.conf
