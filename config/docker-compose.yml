@@ -132,3 +132,5 @@ services:
    - redis
   links:
    - redis
+  env_file:
+   - .env
