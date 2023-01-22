@@ -97,9 +97,9 @@ def settings_page(request):
         if 'stop_task' in request.POST:
             print('stop')
             print(request.POST.get('task_id'))
-            revoked = celery_app.control.revoke(request.POST.get('task_id'), terminate=True)
-            # revoked = AbortableAsyncResult(request.POST.get('task_id'))
-            # revoked.abort()
+            # revoked = celery_app.control.revoke(request.POST.get('task_id'), terminate=True)
+            revoked = AbortableAsyncResult(request.POST.get('task_id'))
+            revoked.abort()
             print(revoked)
     response_data = {
         'my_test_task_id': my_test_task_id,
