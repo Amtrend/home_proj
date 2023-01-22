@@ -3,7 +3,8 @@
     <div class="header-desktop">
         <div class="logo_block">
             {% if request.path != "/" %}
-                <a href="{{ request.META.HTTP_REFERER }}" class="logout_link"><p class="menu_text">&larr;&nbsp;Назад</p></a>
+{#                <a href="{{ request.META.HTTP_REFERER }}" class="logout_link"><p class="menu_text">&larr;&nbsp;Назад</p></a>#}
+                <a href="{% url 'home' %}" class="logout_link"><p class="menu_text">&larr;&nbsp;На главную</p></a>
             {% endif %}
             <a href="{% url 'logout' %}" class="logout_link logout_link_true"><p class="menu_text">Выйти</p></a>
         </div>

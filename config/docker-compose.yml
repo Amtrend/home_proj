@@ -88,20 +88,45 @@ services:
    - "8081:80"
   depends_on:
    - db
- caapp:
+# caapp:
+#  restart: always
+#  container_name: caapp
+#  build:
+#   context: .
+#   dockerfile: dockerfiles/docker_caa.conf
+#  command: python ./main.py
+#  volumes:
+#   - ../code_alarm_app:/code_app
+#  env_file:
+#   - .env
+#  devices:
+#   - /dev/gpiomem:/dev/gpiomem
+#  cap_drop:
+#   - ALL
+#  cap_add:
+#   - SYS_RAWIO
+ redis:
   restart: always
-  container_name: caapp
-  build:
-   context: .
-   dockerfile: dockerfiles/docker_caa.conf
-  command: python ./main.py
-  volumes:
-   - ../code_alarm_app:/code_app
+  image: redis:alpine
+  ports:
+   - "6379:6379"
   env_file:
    - .env
-  devices:
-    - /dev/gpiomem:/dev/gpiomem
-  cap_drop:
-    - ALL
-  cap_add:
-    - SYS_RAWIO
+  command:
+   - /bin/sh
+   - -c
+   - redis-server --requirepass "$${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}"
+ celery:
+  restart: always
+  build:
+   context: .
+   dockerfile: dockerfiles/docker_celery.conf
+  command: celery -A smart_home worker --loglevel=info --logfile=logs/celery.log
+  volumes:
+   - ../code_site:/code
+   - ../logs/celery:/code/logs
+  depends_on:
+   - django
+   - redis
+  links:
+   - redis

@@ -75,9 +75,33 @@ def cams_archive_page(request):
     return render(request, 'camera_home/cams_archive.html', response_data)
 
 
+# my_test_task_id = ''
+
+
+from .tasks import go_test_task
+from smart_home.celery import celery_app
+from celery.contrib.abortable import AbortableAsyncResult
+
+
 @login_required
 def settings_page(request):
+    my_test_task_id = ''
+    if request.method == "POST":
+        # global my_test_task_id
+        print(request.POST)
+        print(my_test_task_id)
+        if 'start_task' in request.POST:
+            print('start')
+            proc_task = go_test_task.delay(test_msg='test celery loop')
+            my_test_task_id = proc_task.id
+        if 'stop_task' in request.POST:
+            print('stop')
+            print(request.POST.get('task_id'))
+            # revoked = celery_app.control.revoke(my_test_task_id, terminate=True)
+            revoked = AbortableAsyncResult(request.POST.get('task_id'))
+            revoked.abort()
+            print(revoked)
     response_data = {
-
+        'my_test_task_id': my_test_task_id,
     }
     return render(request, 'camera_home/settings.html', response_data)

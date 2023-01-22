@@ -2,5 +2,10 @@
 {% load static %}
 {% block title %}Настройки{% endblock %}
 {% block content %}
-    <p>settings</p>
+    <form action="{% url 'settings' %}" method="post" id="test_task_form">
+        {% csrf_token %}
+        <input type="text" name="task_id" form="test_task_form" value="{{ my_test_task_id }}" placeholder="{{ my_test_task_id }}">
+        <button type="submit" name="start_task" value="start" form="test_task_form">Start</button>
+        <button type="submit" name="stop_task" value="stop" form="test_task_form">Stop</button>
+    </form>
 {% endblock %}
