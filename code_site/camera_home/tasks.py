@@ -43,7 +43,7 @@ def send_tg_msg_and_file(api_key, chat_id, text_msg, file):
 
 def catch_motion_ae(gpio, pir, dt, r_link):
     if gpio.input(pir):
-        cur_dt = dt.datetime.now().strftime("%H:%M:%S %d.%m.%Y")
+        cur_dt = dt.now().strftime("%H:%M:%S %d.%m.%Y")
         filename = os.path.join(os.getcwd(), 'ae_video.mp4')
         command = f"ffmpeg -t 00:00:05 -i {r_link} -vcodec copy {filename}"
         save_ae_video = subprocess.run(command, shell=True, capture_output=True)
