@@ -136,8 +136,10 @@ services:
   depends_on:
    - django
    - redis
+   - db
   links:
    - redis
+   - db
   env_file:
    - .env
   devices:
