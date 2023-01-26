@@ -645,3 +645,107 @@ h1, h2, h3, h4, h5, h6, p, a {
         max-width: 350px;
     }
 }
+
+
+/* ========== SETTINGS PAGE ========== */
+
+
+.settings_page {
+    display: flex;
+    flex-direction: column;
+    padding: 40px;
+    width: fit-content;
+    margin: 0 auto;
+}
+
+.settings_block {
+    display: flex;
+    flex-direction: column;
+}
+
+.settings_block-block {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.settings_block-checkbox {
+    margin-left: 10px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border-radius: 5px;
+    border: 1px solid #9292e7;
+    width: 24px;
+    height: 25px;
+    cursor: pointer;
+    position: relative;
+    font-weight: 300;
+    margin-right: 10px;
+    background-color: white;
+}
+
+.settings_block-checkbox::before {
+    content: url("../img/checkmark.svg");
+    width: 30px;
+    font-size: 24px;
+    position: absolute;
+    right: 50%;
+    bottom: 50%;
+    transform: translate(50%, 50%);
+    opacity: 0;
+    transition: .1s ease-in;
+}
+
+.settings_block-checkbox:checked::before {
+    opacity: 1;
+}
+
+.settings_block-checkbox_label:hover {
+    cursor: pointer;
+}
+
+.settings_save-btn {
+    letter-spacing: 2px;
+    font-family: Montserrat, sans-serif;
+    font-size: 16px;
+    line-height: 12px;
+    font-weight: 600;
+    padding: 20px;
+    color: white;
+    background-color: #9292e7;
+    border-radius: 10px;
+    width: fit-content;
+    outline: none;
+    margin-top: 70px;
+    border: 1px solid #9292e7;
+}
+
+.settings_save-btn:hover {
+    cursor: pointer;
+    background-color: #6666e8;
+}
+
+.settings_save-btn:active {
+    background-color: #3b3be0;
+}
+
+.settings_block-_label-comments {
+    text-align: center;
+    font-size: 12px;
+    line-height: 18px;
+    font-family: Montserrat, sans-serif;
+}
+
+@media (max-width: 992px) {
+    .settings_page {
+        width: auto;
+        margin-top: 85px;
+    }
+}
+
+@media (max-width: 576px) {
+    .settings_block-block {
+        flex-direction: column;
+    }
+}

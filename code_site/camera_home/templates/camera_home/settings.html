@@ -2,10 +2,31 @@
 {% load static %}
 {% block title %}Настройки{% endblock %}
 {% block content %}
-    <form action="{% url 'settings' %}" method="post" id="test_task_form">
-        {% csrf_token %}
-        <input type="text" name="task_id" form="test_task_form" value="{{ my_test_task_id }}" placeholder="{{ my_test_task_id }}">
-        <button type="submit" name="start_task" value="start" form="test_task_form">Start</button>
-        <button type="submit" name="stop_task" value="stop" form="test_task_form">Stop</button>
-    </form>
+    <section id="settings_page">
+        <div class="settings_page">
+            <div class="settings_block">
+                <form action="{% url 'settings' %}" method="post" id="settings_form">
+                    {% csrf_token %}
+                </form>
+                <div class="settings_block-block">
+                    <input type="checkbox" class="settings_block-checkbox" name="set_alarm_on_entrance" id="set_alarm_on_entrance" form="settings_form" {% if ae_settings.ae_on %}checked{% endif %}>
+                    <label for="set_alarm_on_entrance" class="settings_block-checkbox_label">Работа камеры по датчику на главном входе</label>
+                </div>
+                {% if ae_settings.ae_on %}
+                    <p class="settings_block-_label-comments">включено {{ ae_settings.on_at|date:"d.m.Y" }} в {{ ae_settings.on_at|date:"H:i:s" }}</p>
+                {% else %}
+                    <p class="settings_block-_label-comments">выключено {{ ae_settings.off_at|date:"d.m.Y" }} в {{ ae_settings.off_at|date:"H:i:s" }}</p>
+                {% endif %}
+                <button type="submit" name="settings_save" class="settings_save-btn" form="settings_form">Сохранить</button>
+            </div>
+        </div>
+    </section>
+
+
+    {#    <form action="{% url 'settings' %}" method="post" id="test_task_form">#}
+    {#        {% csrf_token %}#}
+    {#        <input type="text" name="task_id" form="test_task_form" value="{{ my_test_task_id }}" placeholder="{{ my_test_task_id }}">#}
+    {#        <button type="submit" name="start_task" value="start" form="test_task_form">Start</button>#}
+    {#        <button type="submit" name="stop_task" value="stop" form="test_task_form">Stop</button>#}
+    {#    </form>#}
 {% endblock %}

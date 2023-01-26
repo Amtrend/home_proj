@@ -14,3 +14,17 @@ class CameraEntranceSaveVideos(models.Model):
         verbose_name = 'Видео с камеры у входа'
         verbose_name_plural = 'Видео с камеры у входа'
         ordering = ['-created_at']
+
+
+class AlarmEntranceSettings(models.Model):
+    ae_on = models.BooleanField(verbose_name='Сработка по датчику движения на входе включена', default=False)
+    ae_task_id = models.CharField(max_length=100, verbose_name='id выполняемой задачи', blank=True, null=True)
+    on_at = models.DateTimeField(verbose_name='Дата и время включения режима', blank=True, null=True)
+    off_at = models.DateTimeField(verbose_name='Дата и время выключения режима', blank=True, null=True)
+
+    def __str__(self):
+        return self.ae_task_id
+
+    class Meta:
+        verbose_name = 'Режим сработки у главного входа'
+        ordering = ['-on_at']

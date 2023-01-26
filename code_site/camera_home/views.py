@@ -1,10 +1,13 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http.response import StreamingHttpResponse, JsonResponse, FileResponse
 from .models import *
 from .services import open_file
 from django.contrib.auth import authenticate, login
 from .forms import *
+from .tasks import *
 from django.contrib.auth.decorators import login_required
+from datetime import datetime as dt
+from celery.contrib.abortable import AbortableAsyncResult
 
 
 @login_required
@@ -78,30 +81,58 @@ def cams_archive_page(request):
 # my_test_task_id = ''
 
 
-from .tasks import go_test_task
-from smart_home.celery import celery_app
-from celery.contrib.abortable import AbortableAsyncResult
+# from .tasks import go_test_task
+# from smart_home.celery import celery_app
+# from celery.contrib.abortable import AbortableAsyncResult
 
 
 @login_required
 def settings_page(request):
-    my_test_task_id = ''
-    if request.method == "POST":
-        # global my_test_task_id
-        print(request.POST)
-        print(my_test_task_id)
-        if 'start_task' in request.POST:
-            print('start')
-            proc_task = go_test_task.delay(test_msg='test celery loop')
-            my_test_task_id = proc_task.id
-        if 'stop_task' in request.POST:
-            print('stop')
-            print(request.POST.get('task_id'))
-            # revoked = celery_app.control.revoke(request.POST.get('task_id'), terminate=True)
-            revoked = AbortableAsyncResult(request.POST.get('task_id'))
-            revoked.abort()
-            print(revoked)
+    ae_settings = AlarmEntranceSettings.objects.first()
     response_data = {
-        'my_test_task_id': my_test_task_id,
+        'ae_settings': ae_settings,
     }
+    if 'settings_save' in request.POST:
+        # print(request.POST)
+        ae_on_change = request.POST.get('set_alarm_on_entrance')
+        if ae_settings.ae_on:
+            if not ae_on_change:
+                ae_settings.ae_on = False
+                ae_settings.off_at = dt.now()
+                ae_settings.save()
+                cur_ae_task_id = ae_settings.ae_task_id
+                revoked = AbortableAsyncResult(cur_ae_task_id)
+                revoked.abort()
+        else:
+            if ae_on_change:
+                new_ae_task = go_alarm_entrance_task.delay()
+                ae_settings.ae_task_id = new_ae_task.id
+                ae_settings.ae_on = True
+                ae_settings.on_at = dt.now()
+                ae_settings.off_at = None
+                ae_settings.save()
+        return redirect('home')
+    # my_test_task_id = ''
+    # # print(celery_app)
+    # # print(celery_app.control)
+    # # print(celery_app.conf)
+    # if request.method == "POST":
+    #     # global my_test_task_id
+    #     print(request.POST)
+    #     print(my_test_task_id)
+    #     if 'start_task' in request.POST:
+    #         print('start')
+    #         proc_task = go_test_task.delay(test_msg='test celery loop')
+    #         my_test_task_id = proc_task.id
+    #     if 'stop_task' in request.POST:
+    #         print('stop')
+    #         print(request.POST.get('task_id'))
+    #         # revoked = celery_app.control.revoke(request.POST.get('task_id'), terminate=True)
+    #         # revoked = celery_app.control.revoke(request.POST.get('task_id'), terminate=True)
+    #         revoked = AbortableAsyncResult(request.POST.get('task_id'))
+    #         revoked.abort()
+    #         print(revoked)
+    # response_data = {
+    #     'my_test_task_id': my_test_task_id,
+    # }
     return render(request, 'camera_home/settings.html', response_data)
