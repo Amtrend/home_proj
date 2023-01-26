@@ -2,5 +2,3 @@
 .idea/
 /config/.env
 /db/initdb/initial.sql
-/config/dockerfiles/docker_caa.conf
-config/pip/caa_requirements.txt
