@@ -45,7 +45,7 @@ def catch_motion_ae(gpio, pir, dt, r_link):
     if gpio.input(pir):
         cur_dt = dt.now().strftime("%H:%M:%S %d.%m.%Y")
         filename = os.path.join(os.getcwd(), 'ae_video.mp4')
-        command = f"ffmpeg -t 00:00:05 -i {r_link} -vcodec copy {filename}"
+        command = f"ffmpeg -t 00:00:10 -i {r_link} -vcodec copy {filename}"
         save_ae_video = subprocess.run(command, shell=True, capture_output=True)
         if save_ae_video.returncode == 0:
             send_tg_msg_and_file(api_key=TG_BOT_API, chat_id=TG_CHAT_ID, text_msg=f'Движение у <b>главного входа</b> в {cur_dt}', file='ae_video.mp4')
