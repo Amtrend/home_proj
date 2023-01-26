@@ -2,3 +2,6 @@
 .idea/
 /config/.env
 /db/initdb/initial.sql
+/code_alarm_app/
+/config/dockerfiles/docker_caa.conf
+config/pip/caa_requirements.txt
