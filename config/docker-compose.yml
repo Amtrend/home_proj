@@ -29,8 +29,7 @@ services:
    - /usr/lib/aarch64-linux-gnu/libvchiq_arm.so.0:/usr/lib/aarch64-linux-gnu/libvchiq_arm.so.0
   env_file:
    - .env
-  cap_add:
-   - ALL
+  privileged: true
  django:
   restart: always
   container_name: django
