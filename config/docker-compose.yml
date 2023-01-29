@@ -24,15 +24,14 @@ services:
    - ../code_stream_video_app:/code_app
    - ../media/stream/cam_entrance:/code_app/media_files
    - ../logs/csapp:/code_app/logs
-   - /usr/bin/vcgencmd:/usr/bin/vcgencmd
-   - /usr/lib/arm-linux-gnueabihf/libvcos.so.0:/usr/lib/arm-linux-gnueabihf/libvcos.so.0
-   - /usr/lib/arm-linux-gnueabihf/libvchiq_arm.so.0:/usr/lib/arm-linux-gnueabihf/libvchiq_arm.so.0
   env_file:
    - .env
-  cap_drop:
-   - ALL
+  devices:
+   - /dev/vchiq:/dev/vchiq
+  privileged: true
   cap_add:
-   - SYS_RAWIO
+   - SYS_ADMIN
+   - NET_ADMIN
  django:
   restart: always
   container_name: django
