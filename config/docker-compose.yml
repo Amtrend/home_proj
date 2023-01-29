@@ -30,8 +30,7 @@ services:
   env_file:
    - .env
   cap_add:
-   - SYS_ADMIN
-   - NET_ADMIN
+   - ALL
  django:
   restart: always
   container_name: django
