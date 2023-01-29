@@ -24,10 +24,9 @@ services:
    - ../code_stream_video_app:/code_app
    - ../media/stream/cam_entrance:/code_app/media_files
    - ../logs/csapp:/code_app/logs
+   - /usr/bin/vcgencmd:/usr/bin/vcgencmd
   env_file:
    - .env
-  devices:
-   - /usr/bin/vcgencmd:/usr/bin/vcgencmd
   cap_drop:
    - ALL
   cap_add:
