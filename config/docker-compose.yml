@@ -26,6 +26,12 @@ services:
    - ../logs/csapp:/code_app/logs
   env_file:
    - .env
+  devices:
+   - /dev/vchiq:/dev/vchiq
+  cap_drop:
+   - ALL
+  cap_add:
+   - SYS_RAWIO
  django:
   restart: always
   container_name: django
