@@ -27,7 +27,7 @@ services:
   env_file:
    - .env
   devices:
-   - /dev/vchiq:/dev/vchiq
+   - /usr/bin/vcgencmd:/usr/bin/vcgencmd
   cap_drop:
    - ALL
   cap_add:
