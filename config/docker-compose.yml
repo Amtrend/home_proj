@@ -25,6 +25,8 @@ services:
    - ../media/stream/cam_entrance:/code_app/media_files
    - ../logs/csapp:/code_app/logs
    - /usr/bin/vcgencmd:/usr/bin/vcgencmd
+   - /usr/lib/arm-linux-gnueabihf/libvcos.so.0:/usr/lib/arm-linux-gnueabihf/libvcos.so.0
+   - /usr/lib/arm-linux-gnueabihf/libvchiq_arm.so.0:/usr/lib/arm-linux-gnueabihf/libvchiq_arm.so.0
   env_file:
    - .env
   cap_drop:
