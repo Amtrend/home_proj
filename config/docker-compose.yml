@@ -24,12 +24,12 @@ services:
    - ../code_stream_video_app:/code_app
    - ../media/stream/cam_entrance:/code_app/media_files
    - ../logs/csapp:/code_app/logs
-   - /usr/bin/vcgencmd:/usr/bin/vcgencmd
-   - /usr/lib/aarch64-linux-gnu/libvcos.so.0:/usr/lib/aarch64-linux-gnu/libvcos.so.0
-   - /usr/lib/aarch64-linux-gnu/libvchiq_arm.so.0:/usr/lib/aarch64-linux-gnu/libvchiq_arm.so.0
+#   - /usr/bin/vcgencmd:/usr/bin/vcgencmd
+#   - /usr/lib/aarch64-linux-gnu/libvcos.so.0:/usr/lib/aarch64-linux-gnu/libvcos.so.0
+#   - /usr/lib/aarch64-linux-gnu/libvchiq_arm.so.0:/usr/lib/aarch64-linux-gnu/libvchiq_arm.so.0
   env_file:
    - .env
-  privileged: true
+#  privileged: true
  django:
   restart: always
   container_name: django
