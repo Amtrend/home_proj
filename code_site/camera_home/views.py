@@ -102,5 +102,11 @@ def settings_page(request):
                 ae_settings.on_at = dt.now()
                 ae_settings.off_at = None
                 ae_settings.save()
+            else:
+                ae_settings.off_at = dt.now()
+                ae_settings.save()
+                cur_ae_task_id = ae_settings.ae_task_id
+                revoked = AbortableAsyncResult(cur_ae_task_id)
+                revoked.abort()
         return redirect('home')
     return render(request, 'camera_home/settings.html', response_data)
