@@ -49,7 +49,10 @@ def catch_motion_ae(gpio, pir, dt, r_link):
         save_ae_video = subprocess.run(command, shell=True, capture_output=True)
         if save_ae_video.returncode == 0:
             send_tg_msg_and_file(api_key=TG_BOT_API, chat_id=TG_CHAT_ID, text_msg=f'Движение у <b>главного входа</b> в {cur_dt}', file='ae_video.mp4')
-            os.remove(filename)
+            try:
+                os.remove(filename)
+            except Exception as e:
+                print(f'error while deleting file: {e}')
 
 
 @shared_task(bind=True, base=AbortableTask, acks_late=True, queue='for_alarm_entrance_task', name='alarm_entrance_task')
