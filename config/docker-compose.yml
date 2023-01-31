@@ -116,7 +116,7 @@ services:
   build:
    context: .
    dockerfile: dockerfiles/docker_celery.conf
-  command: celery -A smart_home worker -n alarm_entrance_worker -Q for_alarm_entrance_task -c 2 --loglevel=info --logfile=logs/celery.log
+  command: celery -A smart_home worker -n alarm_entrance_worker -Q for_alarm_entrance_task --loglevel=info --logfile=logs/celery.log
   volumes:
    - ../code_site:/code
    - ../logs/celery:/code/logs
