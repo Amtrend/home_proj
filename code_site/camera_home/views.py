@@ -94,7 +94,7 @@ def settings_page(request):
                 cur_ae_task_id = ae_settings.ae_task_id
                 revoked = AbortableAsyncResult(cur_ae_task_id)
                 revoked.abort()
-                AsyncResult(cur_ae_task_id).revoke(terminate=True, signal='SIGKILL')
+                # AsyncResult(cur_ae_task_id).revoke(terminate=True, signal='SIGKILL')
         else:
             if ae_on_change:
                 new_ae_task = go_alarm_entrance_task.delay()
@@ -109,6 +109,6 @@ def settings_page(request):
                 cur_ae_task_id = ae_settings.ae_task_id
                 revoked = AbortableAsyncResult(cur_ae_task_id)
                 revoked.abort()
-                AsyncResult(cur_ae_task_id).revoke(terminate=True, signal='SIGKILL')
+                # AsyncResult(cur_ae_task_id).revoke(terminate=True, signal='SIGKILL')
         return redirect('home')
     return render(request, 'camera_home/settings.html', response_data)
