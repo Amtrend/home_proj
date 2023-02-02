@@ -14,8 +14,6 @@ TG_BOT_API = os.environ.get("TG_BOT_API")
 TG_CHAT_ID = os.environ.get("TG_CHAT_ID")
 PIR_SENSOR = int(os.environ.get("PIR_SENSOR"))
 RTSP_LINK = os.environ.get("RTSP_LINK")
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(PIR_SENSOR, GPIO.IN)
 
 
 def send_tg_msg(api_key, chat_id, text_msg):
@@ -28,7 +26,7 @@ def send_tg_msg(api_key, chat_id, text_msg):
     return response
 
 
-def send_tg_msg_and_file(api_key, chat_id, text_msg, file):
+def send_tg_msg_and_video(api_key, chat_id, text_msg, file):
     data_send = {
         'chat_id': chat_id,
         'caption': text_msg,
@@ -41,21 +39,24 @@ def send_tg_msg_and_file(api_key, chat_id, text_msg, file):
     return response
 
 
-def catch_motion_ae(gpio, pir, dt, r_link):
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setup(PIR_SENSOR, GPIO.IN)
-    if GPIO.input(PIR_SENSOR):
-    # if gpio.input(pir):
-        cur_dt = dt.now().strftime("%H:%M:%S %d.%m.%Y")
-        filename = os.path.join(os.getcwd(), 'ae_video.mp4')
-        command = f"ffmpeg -t 00:00:10 -i {r_link} -vcodec copy {filename}"
-        save_ae_video = subprocess.run(command, shell=True, capture_output=True)
-        if save_ae_video.returncode == 0:
-            send_tg_msg_and_file(api_key=TG_BOT_API, chat_id=TG_CHAT_ID, text_msg=f'Движение у <b>главного входа</b> в {cur_dt}', file='ae_video.mp4')
-            try:
-                os.remove(filename)
-            except Exception as e:
-                print(f'error while deleting file: {e}')
+# def catch_motion_ae(pir, dt, r_link):
+#     GPIO.setmode(GPIO.BCM)
+#     GPIO.setup(pir, GPIO.IN)
+#     try:
+#         if GPIO.input(pir):
+#             cur_dt = dt.now().strftime("%H:%M:%S %d.%m.%Y")
+#             filename = os.path.join(os.getcwd(), 'ae_video.mp4')
+#             command = f"ffmpeg -t 00:00:10 -i {r_link} -vcodec copy {filename}"
+#             save_ae_video = subprocess.run(command, shell=True, capture_output=True)
+#             if save_ae_video.returncode == 0:
+#                 send_tg_msg_and_file(api_key=TG_BOT_API, chat_id=TG_CHAT_ID, text_msg=f'Движение у <b>главного входа</b> в {cur_dt}', file='ae_video.mp4')
+#                 try:
+#                     os.remove(filename)
+#                 except Exception as e:
+#                     print(f'error while deleting file: {e}')
+#     except Exception as e:
+#         gpio.cleanup()
+#         print(f'error while do catch: {e}')
 
 
 @shared_task(bind=True, base=AbortableTask, acks_late=True, queue='for_alarm_entrance_task', name='alarm_entrance_task')
@@ -63,13 +64,27 @@ def go_alarm_entrance_task(self):
     try:
         if self.request.retries == 5:
             send_tg_msg(api_key=TG_BOT_API, chat_id=TG_CHAT_ID, text_msg=f'<b>Внимание!</b> пятая попытка выполнения задачи {self.name}!')
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(PIR_SENSOR, GPIO.IN)
+        GPIO.add_event_detect(PIR_SENSOR, GPIO.RISING)
         while not self.is_aborted():
-            try:
-                catch_motion_ae(gpio=GPIO, pir=PIR_SENSOR, dt=dt, r_link=RTSP_LINK)
-            except Exception as e:
-                print(f'wtf error : {e}')
+            # if GPIO.input(PIR_SENSOR):
+            if GPIO.event_detected(PIR_SENSOR):
+                cur_dt = dt.now().strftime("%H:%M:%S %d.%m.%Y")
+                filename = os.path.join(os.getcwd(), 'ae_video.mp4')
+                command = f"ffmpeg -t 00:00:10 -i {RTSP_LINK} -vcodec copy {filename}"
+                save_ae_video = subprocess.run(command, shell=True, capture_output=True)
+                if save_ae_video.returncode == 0:
+                    send_tg_msg_and_video(api_key=TG_BOT_API, chat_id=TG_CHAT_ID, text_msg=f'Движение у <b>главного входа</b> в {cur_dt}', file='ae_video.mp4')
+                    try:
+                        os.remove(filename)
+                    except Exception as e:
+                        print(f'error while deleting file: {e}')
+        GPIO.cleanup()
+        GPIO.remove_event_detect(PIR_SENSOR)
     except Exception as e:
         result = f'some error : {e}'
+        print(result)
         raise self.retry(countdown=5, exc=e, max_retries=5)
     else:
         result = 'task will be aborted'
