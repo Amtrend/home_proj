@@ -6,7 +6,7 @@ import os
 from datetime import datetime as dt
 import subprocess
 from .models import *
-# import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 from gpiozero import MotionSensor
 
 
@@ -68,9 +68,9 @@ def go_alarm_entrance_task(self):
         # GPIO.setwarnings(False)
         # GPIO.setup(PIR_SENSOR, GPIO.IN)
         target_pir = MotionSensor(PIR_SENSOR)
+        target_pir.wait_for_motion()
         while not self.is_aborted():
             # if GPIO.input(PIR_SENSOR):
-            target_pir.wait_for_motion()
             if target_pir.motion_detected:
                 cur_dt = dt.now().strftime("%H:%M:%S %d.%m.%Y")
                 filename = os.path.join(os.getcwd(), 'ae_video.mp4')
