@@ -6,7 +6,8 @@ import os
 from datetime import datetime as dt
 import subprocess
 from .models import *
-import RPi.GPIO as GPIO
+# import RPi.GPIO as GPIO
+from gpiozero import MotionSensor
 
 
 TG_BOT_API = os.environ.get("TG_BOT_API")
@@ -63,12 +64,14 @@ def go_alarm_entrance_task(self):
     try:
         if self.request.retries == 5:
             send_tg_msg(api_key=TG_BOT_API, chat_id=TG_CHAT_ID, text_msg=f'<b>Внимание!</b> пятая попытка выполнения задачи {self.name}!')
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setup(PIR_SENSOR, GPIO.IN)
-        # GPIO.add_event_detect(PIR_SENSOR, GPIO.RISING)
+        # GPIO.setmode(GPIO.BCM)
+        # GPIO.setwarnings(False)
+        # GPIO.setup(PIR_SENSOR, GPIO.IN)
+        target_pir = MotionSensor(PIR_SENSOR)
+        target_pir.wait_for_no_motion()
         while not self.is_aborted():
-            if GPIO.input(PIR_SENSOR):
-            # if GPIO.event_detected(PIR_SENSOR):
+            # if GPIO.input(PIR_SENSOR):
+            if target_pir.motion_detected:
                 cur_dt = dt.now().strftime("%H:%M:%S %d.%m.%Y")
                 filename = os.path.join(os.getcwd(), 'ae_video.mp4')
                 command = f"ffmpeg -t 00:00:10 -i {RTSP_LINK} -vcodec copy {filename}"
@@ -79,8 +82,7 @@ def go_alarm_entrance_task(self):
                         os.remove(filename)
                     except Exception as e:
                         print(f'error while deleting file: {e}')
-        GPIO.cleanup()
-        # GPIO.remove_event_detect(PIR_SENSOR)
+        # GPIO.cleanup()
     except Exception as e:
         result = f'some error : {e}'
         print(result)
