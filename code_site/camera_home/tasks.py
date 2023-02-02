@@ -68,7 +68,7 @@ def go_alarm_entrance_task(self):
         # GPIO.setwarnings(False)
         # GPIO.setup(PIR_SENSOR, GPIO.IN)
         target_pir = MotionSensor(PIR_SENSOR)
-        target_pir.wait_for_motion()
+        # target_pir.wait_for_motion()
         while not self.is_aborted():
             # if GPIO.input(PIR_SENSOR):
             if target_pir.motion_detected:
