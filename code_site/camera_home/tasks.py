@@ -1,6 +1,5 @@
 from celery import shared_task
 from celery.contrib.abortable import AbortableTask, AbortableAsyncResult
-from smart_home import celery_app
 from celery.signals import worker_ready
 import requests
 import os
@@ -66,10 +65,10 @@ def go_alarm_entrance_task(self):
             send_tg_msg(api_key=TG_BOT_API, chat_id=TG_CHAT_ID, text_msg=f'<b>Внимание!</b> пятая попытка выполнения задачи {self.name}!')
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(PIR_SENSOR, GPIO.IN)
-        GPIO.add_event_detect(PIR_SENSOR, GPIO.RISING)
+        # GPIO.add_event_detect(PIR_SENSOR, GPIO.RISING)
         while not self.is_aborted():
-            # if GPIO.input(PIR_SENSOR):
-            if GPIO.event_detected(PIR_SENSOR):
+            if GPIO.input(PIR_SENSOR):
+            # if GPIO.event_detected(PIR_SENSOR):
                 cur_dt = dt.now().strftime("%H:%M:%S %d.%m.%Y")
                 filename = os.path.join(os.getcwd(), 'ae_video.mp4')
                 command = f"ffmpeg -t 00:00:10 -i {RTSP_LINK} -vcodec copy {filename}"
@@ -81,7 +80,7 @@ def go_alarm_entrance_task(self):
                     except Exception as e:
                         print(f'error while deleting file: {e}')
         GPIO.cleanup()
-        GPIO.remove_event_detect(PIR_SENSOR)
+        # GPIO.remove_event_detect(PIR_SENSOR)
     except Exception as e:
         result = f'some error : {e}'
         print(result)
