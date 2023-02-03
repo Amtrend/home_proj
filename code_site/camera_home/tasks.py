@@ -6,7 +6,7 @@ import os
 from datetime import datetime as dt
 import subprocess
 from .models import *
-import RPi.GPIO as GPIO
+# import RPi.GPIO as GPIO
 from gpiozero import MotionSensor
 
 
@@ -44,23 +44,22 @@ def go_alarm_entrance_task(self):
     try:
         if self.request.retries == 5:
             send_tg_msg(api_key=TG_BOT_API, chat_id=TG_CHAT_ID, text_msg=f'<b>Внимание!</b> пятая попытка выполнения задачи {self.name}!')
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setwarnings(False)
-        GPIO.setup(PIR_SENSOR, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-        # target_pir = MotionSensor(PIR_SENSOR)
-        # target_pir.wait_for_motion()
+        # GPIO.setmode(GPIO.BCM)
+        # GPIO.setwarnings(False)
+        # GPIO.setup(PIR_SENSOR, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+        target_pir = MotionSensor(PIR_SENSOR)
         while not self.is_aborted():
-            if GPIO.input(PIR_SENSOR) == GPIO.HIGH:
-            # if target_pir.motion_detected:
-            #     print(f'motion_detected - : {target_pir.motion_detected}')
-            #     print(f'value - : {target_pir.value}')
-            #     print(f'is active - : {target_pir.is_active}')
-            #     print(f'threshold- : {target_pir.threshold}')
-            #     print(f'_threshold - : {target_pir._threshold}')
-            #     print(f'pin - : {target_pir.pin}')
-            #     print(f'pull_up - : {target_pir.pull_up}')
-            #     print(f'partial - : {target_pir.partial}')
-            #     print(f'pin_factory - : {target_pir.pin_factory}')
+            # if GPIO.input(PIR_SENSOR) == GPIO.HIGH:
+            if target_pir.motion_detected:
+                print(f'motion_detected - : {target_pir.motion_detected}')
+                print(f'value - : {target_pir.value}')
+                print(f'is active - : {target_pir.is_active}')
+                print(f'threshold- : {target_pir.threshold}')
+                print(f'_threshold - : {target_pir._threshold}')
+                print(f'pin - : {target_pir.pin}')
+                print(f'pull_up - : {target_pir.pull_up}')
+                print(f'partial - : {target_pir.partial}')
+                print(f'pin_factory - : {target_pir.pin_factory}')
                 cur_dt = dt.now().strftime("%H:%M:%S %d.%m.%Y")
                 filename = os.path.join(os.getcwd(), 'ae_video.mp4')
                 command = f"ffmpeg -t 00:00:10 -i {RTSP_LINK} -vcodec copy {filename}"
