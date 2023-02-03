@@ -52,15 +52,15 @@ def go_alarm_entrance_task(self):
             # if GPIO.input(PIR_SENSOR) == GPIO.HIGH:
             # if target_pir.motion_detected:
             if target_pir.value == 1:
-                print(f'motion_detected - : {target_pir.motion_detected}')
-                print(f'value - : {target_pir.value}')
-                print(f'is active - : {target_pir.is_active}')
-                print(f'threshold- : {target_pir.threshold}')
-                print(f'_threshold - : {target_pir._threshold}')
-                print(f'pin - : {target_pir.pin}')
-                print(f'pull_up - : {target_pir.pull_up}')
-                print(f'partial - : {target_pir.partial}')
-                print(f'pin_factory - : {target_pir.pin_factory}')
+                # print(f'motion_detected - : {target_pir.motion_detected}')
+                # print(f'value - : {target_pir.value}')
+                # print(f'is active - : {target_pir.is_active}')
+                # print(f'threshold- : {target_pir.threshold}')
+                # print(f'_threshold - : {target_pir._threshold}')
+                # print(f'pin - : {target_pir.pin}')
+                # print(f'pull_up - : {target_pir.pull_up}')
+                # print(f'partial - : {target_pir.partial}')
+                # print(f'pin_factory - : {target_pir.pin_factory}')
                 cur_dt = dt.now().strftime("%H:%M:%S %d.%m.%Y")
                 filename = os.path.join(os.getcwd(), 'ae_video.mp4')
                 command = f"ffmpeg -t 00:00:10 -i {RTSP_LINK} -vcodec copy {filename}"
@@ -73,8 +73,7 @@ def go_alarm_entrance_task(self):
                         print(f'error while deleting file: {e}')
         # GPIO.cleanup()
     except Exception as e:
-        result = f'some error : {e}'
-        print(result)
+        print(f'some error : {e}')
         raise self.retry(countdown=5, exc=e, max_retries=5)
     else:
         result = 'task will be aborted'
