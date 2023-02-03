@@ -6,7 +6,7 @@ import os
 from datetime import datetime as dt
 import subprocess
 from .models import *
-import RPi.GPIO as GPIO
+# import RPi.GPIO as GPIO
 from gpiozero import MotionSensor
 
 
@@ -39,26 +39,6 @@ def send_tg_msg_and_video(api_key, chat_id, text_msg, file):
     return response
 
 
-# def catch_motion_ae(pir, dt, r_link):
-#     GPIO.setmode(GPIO.BCM)
-#     GPIO.setup(pir, GPIO.IN)
-#     try:
-#         if GPIO.input(pir):
-#             cur_dt = dt.now().strftime("%H:%M:%S %d.%m.%Y")
-#             filename = os.path.join(os.getcwd(), 'ae_video.mp4')
-#             command = f"ffmpeg -t 00:00:10 -i {r_link} -vcodec copy {filename}"
-#             save_ae_video = subprocess.run(command, shell=True, capture_output=True)
-#             if save_ae_video.returncode == 0:
-#                 send_tg_msg_and_file(api_key=TG_BOT_API, chat_id=TG_CHAT_ID, text_msg=f'Движение у <b>главного входа</b> в {cur_dt}', file='ae_video.mp4')
-#                 try:
-#                     os.remove(filename)
-#                 except Exception as e:
-#                     print(f'error while deleting file: {e}')
-#     except Exception as e:
-#         gpio.cleanup()
-#         print(f'error while do catch: {e}')
-
-
 @shared_task(bind=True, base=AbortableTask, acks_late=True, queue='for_alarm_entrance_task', name='alarm_entrance_task')
 def go_alarm_entrance_task(self):
     try:
@@ -72,6 +52,16 @@ def go_alarm_entrance_task(self):
         while not self.is_aborted():
             # if GPIO.input(PIR_SENSOR):
             if target_pir.motion_detected:
+                print(f'value - : {target_pir.value}')
+                print(f'is active - : {target_pir.is_active}')
+                print(f'threshold- : {target_pir.threshold}')
+                print(f'_threshold - : {target_pir._threshold}')
+                print(f'pin - : {target_pir.pin}')
+                print(f'pull_up - : {target_pir.pull_up}')
+                print(f'partial - : {target_pir.partial}')
+                print(f'pin_factory - : {target_pir.pin_factory}')
+                print(f'active_state - : {target_pir.active_state}')
+                print(f'active_state - : {target_pir.active_state}')
                 cur_dt = dt.now().strftime("%H:%M:%S %d.%m.%Y")
                 filename = os.path.join(os.getcwd(), 'ae_video.mp4')
                 command = f"ffmpeg -t 00:00:10 -i {RTSP_LINK} -vcodec copy {filename}"
