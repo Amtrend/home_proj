@@ -50,7 +50,8 @@ def go_alarm_entrance_task(self):
         target_pir = MotionSensor(PIR_SENSOR)
         while not self.is_aborted():
             # if GPIO.input(PIR_SENSOR) == GPIO.HIGH:
-            if target_pir.motion_detected:
+            # if target_pir.motion_detected:
+            if target_pir.value == 1:
                 print(f'motion_detected - : {target_pir.motion_detected}')
                 print(f'value - : {target_pir.value}')
                 print(f'is active - : {target_pir.is_active}')
