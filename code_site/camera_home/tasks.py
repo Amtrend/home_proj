@@ -39,7 +39,8 @@ def send_tg_msg_and_video(api_key, chat_id, text_msg, file):
     return response
 
 
-@shared_task(bind=True, base=AbortableTask, acks_late=True, queue='for_alarm_entrance_task', name='alarm_entrance_task')
+# @shared_task(bind=True, base=AbortableTask, acks_late=True, queue='for_alarm_entrance_task', name='alarm_entrance_task')
+@shared_task(bind=True, base=AbortableTask, queue='for_alarm_entrance_task', name='alarm_entrance_task')
 def go_alarm_entrance_task(self):
     try:
         if self.request.retries == 5:
