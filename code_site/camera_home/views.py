@@ -8,6 +8,7 @@ from .tasks import *
 from django.contrib.auth.decorators import login_required
 from datetime import datetime as dt
 from celery.contrib.abortable import AbortableAsyncResult, AsyncResult
+from django.views.decorators.csrf import csrf_exempt
 
 
 @login_required
@@ -86,27 +87,36 @@ def settings_page(request):
     }
     if 'settings_save' in request.POST:
         ae_on_change = request.POST.get('set_alarm_on_entrance')
-        if ae_settings.ae_on:
-            if not ae_on_change:
-                ae_settings.ae_on = False
-                ae_settings.off_at = dt.now()
-                ae_settings.save()
-                cur_ae_task_id = ae_settings.ae_task_id
-                revoked = AbortableAsyncResult(cur_ae_task_id)
-                revoked.abort()
-        else:
-            if ae_on_change:
-                new_ae_task = go_alarm_entrance_task.delay()
-                ae_settings.ae_task_id = new_ae_task.id
-                ae_settings.ae_on = True
-                ae_settings.on_at = dt.now()
-                ae_settings.off_at = None
-                ae_settings.save()
-            else:
-                ae_settings.off_at = dt.now()
-                ae_settings.save()
-                cur_ae_task_id = ae_settings.ae_task_id
-                revoked = AbortableAsyncResult(cur_ae_task_id)
-                revoked.abort()
+        # if ae_settings.ae_on:
+        #     if not ae_on_change:
+        #         ae_settings.ae_on = False
+        #         ae_settings.off_at = dt.now()
+        #         ae_settings.save()
+        #         cur_ae_task_id = ae_settings.ae_task_id
+        #         revoked = AbortableAsyncResult(cur_ae_task_id)
+        #         revoked.abort()
+        # else:
+        #     if ae_on_change:
+        #         new_ae_task = go_alarm_entrance_task.delay()
+        #         ae_settings.ae_task_id = new_ae_task.id
+        #         ae_settings.ae_on = True
+        #         ae_settings.on_at = dt.now()
+        #         ae_settings.off_at = None
+        #         ae_settings.save()
+        #     else:
+        #         ae_settings.off_at = dt.now()
+        #         ae_settings.save()
+        #         cur_ae_task_id = ae_settings.ae_task_id
+        #         revoked = AbortableAsyncResult(cur_ae_task_id)
+        #         revoked.abort()
         return redirect('home')
     return render(request, 'camera_home/settings.html', response_data)
+
+
+@csrf_exempt
+def sensors_resp_page(request):
+    if request.method == 'GET':
+        print(f'new get request at {dt.now()} - {request.GET}')
+    if request.method == 'POST':
+        print(f'new post request at {dt.now()} - {request.POST}')
+    return JsonResponse({'answer': 'ok'}, status=200)

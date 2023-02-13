@@ -13,5 +13,6 @@ urlpatterns = [
     path('settings/', settings_page, name='settings'),
     path('archive/<int:pk>/', streaming_video, name='stream_video'),
     path('download/<int:pk>/', download_video, name='download_video'),
+    path('sensors/', sensors_resp_page, name='sensors_resp'),
     path('robots.txt', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
 ]

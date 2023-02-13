@@ -51,12 +51,12 @@ services:
    - db
   env_file:
    - .env
-  devices:
-   - /dev/gpiomem:/dev/gpiomem
-  cap_drop:
-   - ALL
-  cap_add:
-   - SYS_RAWIO
+#  devices:
+#   - /dev/gpiomem:/dev/gpiomem
+#  cap_drop:
+#   - ALL
+#  cap_add:
+#   - SYS_RAWIO
  nginx:
   restart: always
   container_name: nginx
@@ -129,9 +129,9 @@ services:
    - db
   env_file:
    - .env
-  devices:
-   - /dev/gpiomem:/dev/gpiomem
-  cap_drop:
-   - ALL
-  cap_add:
-   - SYS_RAWIO
+#  devices:
+#   - /dev/gpiomem:/dev/gpiomem
+#  cap_drop:
+#   - ALL
+#  cap_add:
+#   - SYS_RAWIO
