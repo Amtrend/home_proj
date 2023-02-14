@@ -14,8 +14,8 @@ class CameraEntranceSaveVideosAdmin(admin.ModelAdmin):
 
 @admin.register(AlarmEntranceSettings)
 class AlarmEntranceSettingsAdmin(admin.ModelAdmin):
-    list_display = ('id', 'ae_on', 'ae_task_id', 'on_at', 'off_at')
+    list_display = ('id', 'ae_on', 'ae_token', 'on_at', 'off_at')
     list_display_links = ('id',)
-    search_fields = ('ae_task_id',)
-    fields = ('ae_on', 'ae_task_id', 'on_at', 'off_at')
+    search_fields = ('ae_token',)
+    fields = ('ae_on', 'ae_token', 'on_at', 'off_at')
     list_per_page = 10

@@ -7,8 +7,8 @@ from .forms import *
 from .tasks import *
 from django.contrib.auth.decorators import login_required
 from datetime import datetime as dt
-from celery.contrib.abortable import AbortableAsyncResult, AsyncResult
 from django.views.decorators.csrf import csrf_exempt
+import os
 
 
 @login_required
@@ -87,36 +87,35 @@ def settings_page(request):
     }
     if 'settings_save' in request.POST:
         ae_on_change = request.POST.get('set_alarm_on_entrance')
-        # if ae_settings.ae_on:
-        #     if not ae_on_change:
-        #         ae_settings.ae_on = False
-        #         ae_settings.off_at = dt.now()
-        #         ae_settings.save()
-        #         cur_ae_task_id = ae_settings.ae_task_id
-        #         revoked = AbortableAsyncResult(cur_ae_task_id)
-        #         revoked.abort()
-        # else:
-        #     if ae_on_change:
-        #         new_ae_task = go_alarm_entrance_task.delay()
-        #         ae_settings.ae_task_id = new_ae_task.id
-        #         ae_settings.ae_on = True
-        #         ae_settings.on_at = dt.now()
-        #         ae_settings.off_at = None
-        #         ae_settings.save()
-        #     else:
-        #         ae_settings.off_at = dt.now()
-        #         ae_settings.save()
-        #         cur_ae_task_id = ae_settings.ae_task_id
-        #         revoked = AbortableAsyncResult(cur_ae_task_id)
-        #         revoked.abort()
+        if ae_settings.ae_on:
+            if not ae_on_change:
+                ae_settings.ae_on = False
+                ae_settings.off_at = dt.now()
+                ae_settings.save()
+        else:
+            if ae_on_change:
+                if not ae_settings.ae_token:
+                    ae_settings.ae_token = os.environ.get("AES_TOKEN")
+                ae_settings.ae_on = True
+                ae_settings.on_at = dt.now()
+                ae_settings.off_at = None
+                ae_settings.save()
         return redirect('home')
     return render(request, 'camera_home/settings.html', response_data)
 
 
 @csrf_exempt
 def sensors_resp_page(request):
-    if request.method == 'GET':
-        print(f'new get request at {dt.now()} - {request.GET}')
     if request.method == 'POST':
-        print(f'new post request at {dt.now()} - {request.POST}')
+        place = request.POST.get('place')
+        if place:
+            if place == 'entrance':
+                s_type = request.POST.get('type')
+                token = request.POST.get('token')
+                cur_sens_set = AlarmEntranceSettings.objects.first()
+                cur_sens_token = cur_sens_set.ae_token
+                if cur_sens_set.ae_on:
+                    if s_type == 'pir' and token == cur_sens_token:
+                        cur_dt = dt.now().strftime("%H:%M:%S %d.%m.%Y")
+                        go_alarm_entrance_task.delay(targ_timesamp=cur_dt)
     return JsonResponse({'answer': 'ok'}, status=200)
