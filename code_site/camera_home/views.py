@@ -108,20 +108,14 @@ def settings_page(request):
 def sensors_resp_page(request):
     if request.method == 'POST':
         place = request.POST.get('place')
-        print(place)
         if place:
             if place == 'entrance':
-                print('da')
                 s_type = request.POST.get('type')
                 token = request.POST.get('token')
                 cur_sens_set = AlarmEntranceSettings.objects.first()
                 cur_sens_token = cur_sens_set.ae_token
-                print(s_type)
-                print(token)
                 if cur_sens_set.ae_on:
-                    print('da vkl')
                     if s_type == 'pir' and token == cur_sens_token:
-                        print('go task')
                         cur_dt = dt.now().strftime("%H:%M:%S %d.%m.%Y")
                         go_alarm_entrance_task.delay(targ_timesamp=cur_dt)
     return JsonResponse({'answer': 'ok'}, status=200)
