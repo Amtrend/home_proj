@@ -37,6 +37,8 @@ def go_alarm_entrance_task(targ_timesamp):
                 os.remove(filename)
             except Exception as e:
                 print(f'error while deleting file: {e}')
+        else:
+            return "ошиба при записи видео с камеры"
         return "Выполнена задача по сработке у главного входа"
     except Exception as e:
         return f"Ошибка выполнения задачи по сработке у главного входа: {e}"
