@@ -29,7 +29,10 @@ def go_alarm_entrance_task(targ_timesamp):
         command = f"ffmpeg -t 00:00:08 -i {RTSP_LINK} -vcodec copy {filename}"
         save_ae_video = subprocess.run(command, shell=True, capture_output=True)
         if save_ae_video.returncode == 0:
-            send_tg_msg_and_video(api_key=TG_BOT_API, chat_id=TG_CHAT_ID, text_msg=f'Движение у <b>главного входа</b> в {targ_timesamp}', file='ae_video.mp4')
+            try:
+                send_tg_msg_and_video(api_key=TG_BOT_API, chat_id=TG_CHAT_ID, text_msg=f'Движение у <b>главного входа</b> в {targ_timesamp}', file='ae_video.mp4')
+            except Exception as e:
+                print(f'error with sending video - {e}')
             try:
                 os.remove(filename)
             except Exception as e:
