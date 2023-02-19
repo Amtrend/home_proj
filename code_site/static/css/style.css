@@ -737,6 +737,48 @@ h1, h2, h3, h4, h5, h6, p, a {
     font-family: Montserrat, sans-serif;
 }
 
+/*.settings_block-block_sens {*/
+/*    display: flex;*/
+/*    flex-direction: row;*/
+/*    justify-content: space-between;*/
+/*    margin-top: 30px;*/
+/*    align-items: center;*/
+/*}*/
+
+/*.settings_block-block_sens-btn {*/
+/*    letter-spacing: 2px;*/
+/*    font-family: Montserrat, sans-serif;*/
+/*    font-size: 12px;*/
+/*    line-height: 10px;*/
+/*    font-weight: 600;*/
+/*    padding: 10px;*/
+/*    color: white;*/
+/*    background-color: #9292e7;*/
+/*    border-radius: 10px;*/
+/*    width: fit-content;*/
+/*    outline: none;*/
+/*    border: 1px solid #9292e7;*/
+/*}*/
+
+/*.settings_block-block_sens-btn:hover {*/
+/*    cursor: pointer;*/
+/*    background-color: #6666e8;*/
+/*}*/
+
+/*.settings_block-block_sens-btn:active {*/
+/*    background-color: #3b3be0;*/
+/*}*/
+
+/*.settings_block-block_sens-text {*/
+/*    font-size: 14px;*/
+/*}*/
+
+/*.settings_block-block_sens-block_text {*/
+/*    display: flex;*/
+/*    flex-direction: column;*/
+/*    align-items: center;*/
+/*}*/
+
 @media (max-width: 992px) {
     .settings_page {
         width: auto;

@@ -101,18 +101,30 @@ def settings_page(request):
                 ae_settings.off_at = None
                 ae_settings.save()
         return redirect('home')
+    # if 'settings_sens_rest' in request.POST:
+    #     print(request.POST)
+    #     return redirect('home')
+    #     # return render(request, 'camera_home/settings.html', response_data)
     return render(request, 'camera_home/settings.html', response_data)
 
 
 @csrf_exempt
 def sensors_resp_page(request):
+    if request.method == 'GET':
+        print(f'get - {request.GET}')
     if request.method == 'POST':
+        print(f'post - {request.POST}')
         place = request.POST.get('place')
         if place:
             if place == 'entrance':
                 s_type = request.POST.get('type')
                 token = request.POST.get('token')
+                # ip_addr = request.POST.get('ipaddr')
                 cur_sens_set = AlarmEntranceSettings.objects.first()
+                # if ip_addr:
+                #     cur_sens_set.ae_addr = ip_addr
+                #     cur_sens_set.save()
+                # else:
                 cur_sens_token = cur_sens_set.ae_token
                 if cur_sens_set.ae_on:
                     if s_type == 'pir' and token == cur_sens_token:

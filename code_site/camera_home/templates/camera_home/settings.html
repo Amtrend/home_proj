@@ -8,6 +8,10 @@
                 <form action="{% url 'settings' %}" method="post" id="settings_form">
                     {% csrf_token %}
                 </form>
+{#                <form action="{% url 'settings' %}" method="post" id="settings_form_restart">#}
+{#                    {% csrf_token %}#}
+{#                    <input type="hidden" name="sens" form="settings_form_restart">#}
+{#                </form>#}
                 <div class="settings_block-block">
                     <input type="checkbox" class="settings_block-checkbox" name="set_alarm_on_entrance" id="set_alarm_on_entrance" form="settings_form" {% if ae_settings.ae_on %}checked{% endif %}>
                     <label for="set_alarm_on_entrance" class="settings_block-checkbox_label">Работа камеры по датчику на главном входе</label>
@@ -17,6 +21,13 @@
                 {% else %}
                     <p class="settings_block-_label-comments">выключено {{ ae_settings.off_at|date:"d.m.Y" }} в {{ ae_settings.off_at|date:"H:i:s" }}</p>
                 {% endif %}
+{#                <div class="settings_block-block_sens">#}
+{#                    <div class="settings_block-block_sens-block_text">#}
+{#                        <p class="settings_block-block_sens-text">Датчик у главного входа</p>#}
+{#                        <p class="settings_block-block_sens-text">{{ ae_settings.ae_addr }}</p>#}
+{#                    </div>#}
+{#                    <button type="submit" class="settings_block-block_sens-btn" name="settings_sens_rest" form="settings_form_restart">Перезапустить</button>#}
+{#                </div>#}
                 <button type="submit" name="settings_save" class="settings_save-btn" form="settings_form">Сохранить</button>
             </div>
         </div>

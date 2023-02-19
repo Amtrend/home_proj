@@ -32,13 +32,13 @@ def go_alarm_entrance_task(targ_timesamp):
             try:
                 send_tg_msg_and_video(api_key=TG_BOT_API, chat_id=TG_CHAT_ID, text_msg=f'Движение у <b>главного входа</b> в {targ_timesamp}', file='ae_video.mp4')
             except Exception as e:
-                print(f'error with sending video - {e}')
+                print(f'ошибка при отправке видео - {e}')
             try:
                 os.remove(filename)
             except Exception as e:
-                print(f'error while deleting file: {e}')
+                print(f'ошибка при удалении файла - {e}')
         else:
-            return "ошиба при записи видео с камеры"
-        return "Выполнена задача по сработке у главного входа"
+            return "ошибка при записи видео с камеры"
+        return "выполнена задача по сработке у главного входа"
     except Exception as e:
-        return f"Ошибка выполнения задачи по сработке у главного входа: {e}"
+        return f"ошибка выполнения задачи по сработке у главного входа: {e}"

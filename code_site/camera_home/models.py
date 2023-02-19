@@ -19,6 +19,7 @@ class CameraEntranceSaveVideos(models.Model):
 class AlarmEntranceSettings(models.Model):
     ae_on = models.BooleanField(verbose_name='Сработка по датчику движения на входе включена', default=False)
     ae_token = models.CharField(max_length=100, verbose_name='токен для авторизации', blank=True, null=True)
+    ae_addr = models.CharField(max_length=100, verbose_name='ip адрес wi-fi модуля', blank=True, null=True)
     on_at = models.DateTimeField(verbose_name='Дата и время включения режима', blank=True, null=True)
     off_at = models.DateTimeField(verbose_name='Дата и время выключения режима', blank=True, null=True)
 
