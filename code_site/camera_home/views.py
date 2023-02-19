@@ -110,10 +110,7 @@ def settings_page(request):
 
 @csrf_exempt
 def sensors_resp_page(request):
-    if request.method == 'GET':
-        print(f'get - {request.GET}')
     if request.method == 'POST':
-        print(f'post - {request.POST}')
         place = request.POST.get('place')
         if place:
             if place == 'entrance':
