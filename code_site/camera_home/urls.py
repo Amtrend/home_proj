@@ -10,6 +10,7 @@ urlpatterns = [
     path('', main_page, name='home'),
     path('livecams_feed/', livecams_feed_page, name='livecams_feed'),
     path('cams_archive/', cams_archive_page, name='cams_archive'),
+    path('cam_archive/<str:cam>/', cam_archive_page, name='cam_archive'),
     path('settings/', settings_page, name='settings'),
     path('archive/<int:pk>/', streaming_video, name='stream_video'),
     path('download/<int:pk>/', download_video, name='download_video'),

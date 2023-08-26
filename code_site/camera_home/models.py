@@ -30,3 +30,19 @@ class AlarmEntranceSettings(models.Model):
         verbose_name = 'Режим сработки у главного входа'
         verbose_name_plural = 'Режимы сработки у главного входа'
         ordering = ['-on_at']
+
+
+class CameraBEntranceSaveVideos(models.Model):
+    title = models.CharField(max_length=255, verbose_name='Название файла')
+    video = models.FileField(upload_to='archive/cam_b_entrance/', verbose_name='Путь к файлу')
+    start_recording = models.DateTimeField(verbose_name='Дата и время начала записи')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата и время сохранения')
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = 'Видео с камеры у входа на заднем дворе'
+        verbose_name_plural = 'Видео с камеры у входа на заднем дворе'
+        ordering = ['-created_at']
+

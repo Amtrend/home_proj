@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ p_title }}{% endblock %}
+{% block content %}
+    <section id="archive_page">
+        <div class="archive_page">
+            <p class="title_archive_camera">{{ p_title }}</p>
+            <div class="arch_cam_videos_blocks">
+                {% for ce_video in ce_videos %}
+                    <div class="arch_cam_video_block">
+                        <p class="arch_cam_video_block-title">{{ ce_video.start_recording|date:"d.m.Y H:i:s" }} - {{ ce_video.created_at|date:"H:i:s" }}</p>
+                        <video class="arch_cam_video_block-video" controls muted preload="none">
+                            <source src="{% url 'stream_video' ce_video.id  %}" type="video/mp4"/>
+                        </video>
+                        {% if request.user.is_superuser %}
+                            <div class="arch_cam_video_block-btns">
+                                <a href="{% url 'download_video' ce_video.id %}" download=""><input type="button" class="arch_cam_video_block-btn_download" value="Скачать"></a>
+                                <input type="button" class="arch_cam_video_block-btn_delete" id="{{ ce_video.id }}" value="Удалить">
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="modal_are-u-sure" id="del_video_aus">
+            <div class="modal_are-u-sure_content" id="edit-course-modal_aus_content">
+                <span class="modal_are-u-sure_close" id="del_video_aus_close">&times;</span>
+                <p class="modal_are-u-sure-text" id="del_video_aus-text">Вы уверены, что хотите удалить видео?</p>
+                <div class="modal_are-u-sure-btns">
+                    <button type="submit" class="modal_are-u-sure_yes" id="del_video_aus_yes" name="del_video_aus_yes" form="delete_archive_video_form">Да</button>
+                    <button type="button" class="modal_are-u-sure_no" id="del_video_aus_no" name="del_video_aus_no">Нет</button>
+                    <form action="{% url 'cams_archive' %}" method="post" id="delete_archive_video_form">
+                        {% csrf_token %}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

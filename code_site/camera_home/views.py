@@ -66,17 +66,42 @@ def livecams_feed_page(request):
 
 @login_required
 def cams_archive_page(request):
-    ce_videos = CameraEntranceSaveVideos.objects.all()
+    # ce_videos = CameraEntranceSaveVideos.objects.all()
+    # response_data = {
+    #     "ce_videos": ce_videos,
+    # }
+    # if request.method == 'POST':
+    #     if 'del_video_aus_yes' in request.POST:
+    #         target_video_id = request.POST.get("del_video_aus_yes")
+    #         target_video = CameraEntranceSaveVideos.objects.get(id=target_video_id)
+    #         target_video.delete()
+    #         return JsonResponse({'answer': target_video_id}, status=200)
+    # return render(request, 'camera_home/cams_archive.html', response_data)
+    return render(request, 'camera_home/cams_archive.html')
+
+
+@login_required
+def cam_archive_page(request, cam):
+    if cam == 'entry':
+        ce_videos = CameraEntranceSaveVideos.objects.all()
+        p_title = "Архив камеры у главного входа"
+    if cam == 'b_entry':
+        ce_videos = CameraBEntranceSaveVideos.objects.all()
+        p_title = "Архив камеры у входа на заднем дворе"
     response_data = {
         "ce_videos": ce_videos,
+        "p_title": p_title,
     }
     if request.method == 'POST':
         if 'del_video_aus_yes' in request.POST:
             target_video_id = request.POST.get("del_video_aus_yes")
-            target_video = CameraEntranceSaveVideos.objects.get(id=target_video_id)
+            if cam == 'entry':
+                target_video = CameraEntranceSaveVideos.objects.get(id=target_video_id)
+            if cam == 'b_entry':
+                target_video = CameraBEntranceSaveVideos.objects.get(id=target_video_id)
             target_video.delete()
             return JsonResponse({'answer': target_video_id}, status=200)
-    return render(request, 'camera_home/cams_archive.html', response_data)
+    return render(request, 'camera_home/cam_archive.html', response_data)
 
 
 @login_required
