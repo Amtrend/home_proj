@@ -148,3 +148,16 @@ services:
    - ../logs/csbeapp:/code_app/logs
   env_file:
    - .env
+ svbeapp:
+  restart: always
+  container_name: svbeapp
+  build:
+   context: .
+   dockerfile: dockerfiles/docker_sva.conf
+  command: python ./main.py
+  volumes:
+   - ../code_be_save_video_app:/code_app
+   - ../media/archive/cam_b_entrance:/code_app/media_files
+   - ../logs/svbeapp:/code_app/logs
+  env_file:
+   - .env
