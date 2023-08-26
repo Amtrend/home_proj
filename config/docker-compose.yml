@@ -135,3 +135,16 @@ services:
 #   - ALL
 #  cap_add:
 #   - SYS_RAWIO
+ csbeapp:
+  restart: always
+  container_name: csbeapp
+  build:
+   context: .
+   dockerfile: dockerfiles/docker_csa.conf
+  command: python ./main.py
+  volumes:
+   - ../code_be_stream_video_app:/code_app
+   - ../media/stream/cam_b_entrance:/code_app/media_files
+   - ../logs/csbeapp:/code_app/logs
+  env_file:
+   - .env
