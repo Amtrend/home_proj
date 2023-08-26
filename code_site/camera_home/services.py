@@ -1,6 +1,6 @@
 from pathlib import Path
 from django.shortcuts import get_object_or_404
-from .models import CameraEntranceSaveVideos
+from .models import CameraEntranceSaveVideos, CameraBEntranceSaveVideos
 
 
 def ranged(file, start=0, end=None, block_size=8192):
@@ -19,8 +19,11 @@ def ranged(file, start=0, end=None, block_size=8192):
         file.close()
 
 
-def open_file(request, video_pk):
-    _video = get_object_or_404(CameraEntranceSaveVideos, pk=video_pk)
+def open_file(request, cam, video_pk):
+    if cam == 'entry':
+        _video = get_object_or_404(CameraEntranceSaveVideos, pk=video_pk)
+    if cam == 'b_entry':
+        _video = get_object_or_404(CameraBEntranceSaveVideos, pk=video_pk)
     path = Path(_video.video.path)
     file = path.open('rb')
     file_size = path.stat().st_size

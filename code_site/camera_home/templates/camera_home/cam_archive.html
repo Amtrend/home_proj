@@ -10,11 +10,11 @@
                     <div class="arch_cam_video_block">
                         <p class="arch_cam_video_block-title">{{ ce_video.start_recording|date:"d.m.Y H:i:s" }} - {{ ce_video.created_at|date:"H:i:s" }}</p>
                         <video class="arch_cam_video_block-video" controls muted preload="none">
-                            <source src="{% url 'stream_video' ce_video.id  %}" type="video/mp4"/>
+                            <source src="{% url 'stream_video' cam ce_video.id %}" type="video/mp4"/>
                         </video>
                         {% if request.user.is_superuser %}
                             <div class="arch_cam_video_block-btns">
-                                <a href="{% url 'download_video' ce_video.id %}" download=""><input type="button" class="arch_cam_video_block-btn_download" value="Скачать"></a>
+                                <a href="{% url 'download_video' cam ce_video.id %}" download=""><input type="button" class="arch_cam_video_block-btn_download" value="Скачать"></a>
                                 <input type="button" class="arch_cam_video_block-btn_delete" id="{{ ce_video.id }}" value="Удалить">
                             </div>
                         {% endif %}
@@ -29,7 +29,7 @@
                 <div class="modal_are-u-sure-btns">
                     <button type="submit" class="modal_are-u-sure_yes" id="del_video_aus_yes" name="del_video_aus_yes" form="delete_archive_video_form">Да</button>
                     <button type="button" class="modal_are-u-sure_no" id="del_video_aus_no" name="del_video_aus_no">Нет</button>
-                    <form action="{% url 'cams_archive' %}" method="post" id="delete_archive_video_form">
+                    <form action="{% url 'cam_archive' cam %}" method="post" id="delete_archive_video_form">
                         {% csrf_token %}
                     </form>
                 </div>

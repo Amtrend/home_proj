@@ -12,8 +12,8 @@ import os
 
 
 @login_required
-def streaming_video(request, pk):
-    file, status_code, content_length, content_range = open_file(request, pk)
+def streaming_video(request, cam, pk):
+    file, status_code, content_length, content_range = open_file(request, cam, pk)
     response = StreamingHttpResponse(file, status=status_code, content_type='video/mp4')
     response['Accept-Ranges'] = 'bytes'
     response['Content-Length'] = str(content_length)
@@ -23,8 +23,11 @@ def streaming_video(request, pk):
 
 
 @login_required
-def download_video(request, pk):
-    obj = get_object_or_404(CameraEntranceSaveVideos, id=pk)
+def download_video(request, cam, pk):
+    if cam == 'entry':
+        obj = get_object_or_404(CameraEntranceSaveVideos, id=pk)
+    if cam == 'b_entry':
+        obj = get_object_or_404(CameraBEntranceSaveVideos, id=pk)
     filename = obj.video.path
     response = FileResponse(open(filename, 'rb'))
     return response
@@ -91,6 +94,7 @@ def cam_archive_page(request, cam):
     response_data = {
         "ce_videos": ce_videos,
         "p_title": p_title,
+        "cam": cam,
     }
     if request.method == 'POST':
         if 'del_video_aus_yes' in request.POST:
