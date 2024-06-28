@@ -1,4 +1,6 @@
 /venv/
 .idea/
+__pycache__/
 /config/.env
-/db/initdb/initial.sql
+*.pyc
+/db/
