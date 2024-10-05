@@ -69,8 +69,8 @@ services:
    dockerfile: dockerfiles/docker_nginx.conf
   depends_on:
    - django
-  ports:
-   - "80:80"
+#  ports:
+#   - "80:80"
   entrypoint: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
  db:
   image: mariadb
