@@ -13,5 +13,5 @@ jobs:
           host: ${{ secrets.SERVER_IP }}
           port: ${{ secrets.SERVER_PORT }}
           username: ${{ secrets.SERVER_USERNAME }}
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: cd ${{ secrets.PROJECT_PATH }} && git pull https://${{ secrets.GIT_TOKEN }}:x-oauth-basic@github.com/Amtrend/home_proj.git master
