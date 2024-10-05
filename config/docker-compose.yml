@@ -94,7 +94,7 @@ services:
    - "traefik.http.routers.https-home.rule=Host(`home.amtrend.ru`)"
    - "traefik.http.routers.https-home.tls.certResolver=le"
    - "traefik.http.routers.https-home.entrypoints=https"
-  entrypoint: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+#  entrypoint: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
  db:
   image: mariadb
   restart: always
