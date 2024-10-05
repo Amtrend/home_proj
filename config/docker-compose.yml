@@ -11,6 +11,8 @@ services:
    - ../code_save_video_app:/code_app
    - ../media/archive/cam_entrance:/code_app/media_files
    - ../logs/svapp:/code_app/logs
+  networks:
+   - home_default
   env_file:
    - .env
  csapp:
@@ -27,6 +29,8 @@ services:
 #   - /usr/bin/vcgencmd:/usr/bin/vcgencmd
 #   - /usr/lib/aarch64-linux-gnu/libvcos.so.0:/usr/lib/aarch64-linux-gnu/libvcos.so.0
 #   - /usr/lib/aarch64-linux-gnu/libvchiq_arm.so.0:/usr/lib/aarch64-linux-gnu/libvchiq_arm.so.0
+  networks:
+   - home_default
   env_file:
    - .env
 #  privileged: true
@@ -44,11 +48,14 @@ services:
   command: uwsgi --ini /etc/uwsgi.ini
   links:
    - db
-  ports:
-   - "8001:8001"
-   - "8000:8000"
+#  ports:
+#   - "8001:8001"
+#   - "8000:8000"
   depends_on:
    - db
+  networks:
+   - home_default
+   - traefik_external
   env_file:
    - .env
 #  devices:
@@ -69,8 +76,24 @@ services:
    dockerfile: dockerfiles/docker_nginx.conf
   depends_on:
    - django
+  networks:
+   - home_default
+   - traefik_external
 #  ports:
 #   - "80:80"
+  labels:
+   # Common traefik labels
+   - "traefik.enable=true"
+   - "traefik.docker.network=traefik_external"
+   - "traefik.http.middlewares.home-redirect.redirectscheme.scheme=https"
+   # Router traefik labels for http hostname entrypoint
+   - "traefik.http.routers.http-home.middlewares=home-redirect@docker"
+   - "traefik.http.routers.http-home.rule=Host(`home.amtrend.ru`)"
+   - "traefik.http.routers.http-home.entrypoints=http"
+   # Router traefik labels for https hostname entrypoint
+   - "traefik.http.routers.https-home.rule=Host(`home.amtrend.ru`)"
+   - "traefik.http.routers.https-home.tls.certResolver=le"
+   - "traefik.http.routers.https-home.entrypoints=https"
   entrypoint: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
  db:
   image: mariadb
@@ -78,33 +101,37 @@ services:
   container_name: db
   env_file:
    - .env
-  ports:
-   - "3306:3306"
+#  ports:
+#   - "3306:3306"
   volumes:
    - ../db/initdb:/docker-entrypoint-initdb.d
    - ../db/workdb:/var/lib/mysql
- phpmyadmin:
-  image: phpmyadmin
-  container_name: phpmyadmin
-  links:
-   - db
-  environment:
-   PMA_ARBITARY: 1
-   PMA_HOST: db
-   PMA_PORT: 3306
-  restart: on-failure
-  ports:
-   - "8081:80"
-  depends_on:
-   - db
+  networks:
+   - home_default
+# phpmyadmin:
+#  image: phpmyadmin
+#  container_name: phpmyadmin
+#  links:
+#   - db
+#  environment:
+#   PMA_ARBITARY: 1
+#   PMA_HOST: db
+#   PMA_PORT: 3306
+#  restart: on-failure
+#  ports:
+#   - "8081:80"
+#  depends_on:
+#   - db
  redis:
   restart: always
   image: redis:alpine
   container_name: redis
-  ports:
-   - "6379:6379"
+#  ports:
+#   - "6379:6379"
   env_file:
    - .env
+  networks:
+   - home_default
   command:
    - /bin/sh
    - -c
@@ -119,6 +146,8 @@ services:
   volumes:
    - ../code_site:/code
    - ../logs/celery:/code/logs
+  networks:
+   - home_default
   depends_on:
    - django
    - redis
@@ -145,6 +174,8 @@ services:
    - ../code_be_stream_video_app:/code_app
    - ../media/stream/cam_b_entrance:/code_app/media_files
    - ../logs/csbeapp:/code_app/logs
+  networks:
+   - home_default
   env_file:
    - .env
  svbeapp:
@@ -158,5 +189,12 @@ services:
    - ../code_be_save_video_app:/code_app
    - ../media/archive/cam_b_entrance:/code_app/media_files
    - ../logs/svbeapp:/code_app/logs
+  networks:
+   - home_default
   env_file:
    - .env
+
+networks:
+  traefik_external:
+    external: true
+  home_default:
