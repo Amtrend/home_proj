@@ -48,8 +48,8 @@ services:
   command: uwsgi --ini /etc/uwsgi.ini
   links:
    - db
-  ports:
-   - "127.0.0.1:8088:80"
+#  ports:
+#   - "127.0.0.1:8088:80"
 #   - "8282:8282"
 #   - "8000:8000"
   depends_on:
