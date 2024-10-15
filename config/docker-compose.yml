@@ -91,6 +91,8 @@ services:
    - "traefik.http.routers.http-home.middlewares=home-redirect@docker"
    - "traefik.http.routers.http-home.rule=Host(`home.amtrend.ru`)"
    - "traefik.http.routers.http-home.entrypoints=http"
+   - "traefik.http.routers.traefik-local.rule=Host(`192.168.0.9`)"
+   - "traefik.http.routers.traefik-local.entrypoints=http"
    # Router traefik labels for https hostname entrypoint
    - "traefik.http.routers.https-home.rule=Host(`home.amtrend.ru`)"
    - "traefik.http.routers.https-home.tls.certResolver=le"
