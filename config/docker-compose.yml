@@ -177,6 +177,7 @@ services:
 #      - "8088:8088"  # HTTP API
 #      - "8188:8188"  # WebSockets (для WebRTC)
 #      - "10000-10100:10000-10100/udp"  # RTP ports
+    network_mode: "host"
     volumes:
       - ./janus_cfg/janus.plugin.streaming.jcfg:/usr/local/etc/janus/janus.plugin.streaming.jcfg
       - ./janus_cfg/janus.jcfg:/usr/local/etc/janus/janus.jcfg
