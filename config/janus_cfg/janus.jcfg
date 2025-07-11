@@ -285,14 +285,14 @@ websockets: {
     threads = 4
 }
 nat: {
-	stun_server = ""
+	stun_server = "stun.l.google.com"
 	stun_port = 19302
 	nice_debug = true
 	#full_trickle = true
 	#ice_nomination = "regular"
 	#ice_consent_freshness = true
 	#ice_keepalive_conncheck = true
-	ice_lite = true
+	#ice_lite = true
 	#ice_tcp = true
 
 	# By default, Janus implements a grace period when detecting ICE
