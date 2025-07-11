@@ -12,8 +12,8 @@ nat: {
     no_mdns = true
     ice_no_mdns = true
     ice_ignore_list = "vmnet,vboxnet0"
-    stun_server = "stun.l.google.com"
-    stun_port = 19302
+    stun_server = ""
+    stun_port = 0
 }
 
 websockets: {
