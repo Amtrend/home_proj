@@ -182,6 +182,9 @@ services:
       - ./janus_cfg/janus.jcfg:/usr/local/etc/janus/janus.jcfg
     networks:
       - home_default
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
   stream_en:
 #    image: jrottenberg/ffmpeg
     image: linuxserver/ffmpeg:arm64v8-6.1.1
