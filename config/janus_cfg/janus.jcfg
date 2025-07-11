@@ -1,6 +1,6 @@
 general: {
     debug_level = 3
-    log_to_file = true
+    log_to_file = false
     log_file = "/var/log/janus/janus.log"
 }
 
@@ -14,7 +14,6 @@ websockets: {
     listen_ip = "0.0.0.0"
     listen_port = 8188
     path = "/janus"
-    ssl = false
 }
 
 http: {
