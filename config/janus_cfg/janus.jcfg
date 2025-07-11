@@ -214,9 +214,9 @@ nat: {
 	nice_debug = false
 	#full_trickle = true
 	#ice_nomination = "regular"
-	ice_consent_freshness = true
-	ice_keepalive_conncheck = true
-	ice_lite = true
+	#ice_consent_freshness = true
+	#ice_keepalive_conncheck = true
+	#ice_lite = true
 	#ice_tcp = true
 
 	# By default, Janus implements a grace period when detecting ICE
@@ -234,7 +234,7 @@ nat: {
 	# helpful in case you know clients will never be in the same private
 	# network as the one the Janus instance is running from. Notice that
 	# this will cause ICE to fail if mDNS is the only way to connect!
-	ignore_mdns = true
+	#ignore_mdns = true
 
 	# In case you're deploying Janus on a server which is configured with
 	# a 1:1 NAT (e.g., Amazon EC2), you might want to also specify the public
@@ -250,7 +250,7 @@ nat: {
 	# Multiple public IP addresses can be specified as a comma separated list
 	# if the Janus is deployed in a DMZ between two 1-1 NAT for internal and
 	# external users.
-	nat_1_1_mapping = "178.44.116.78"
+	#nat_1_1_mapping = "178.44.116.78"
 	#keep_private_host = true
 
 	# You can configure a TURN server in two different ways: specifying a
