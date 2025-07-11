@@ -1,19 +1,12 @@
 general: {
-    debug_level = 7
+    debug_level = 3
     log_to_file = true
     log_file = "/var/log/janus/janus.log"
 }
 
 nat: {
-    nice_debug = true
-    ice_lite = false
-    force_ipv4 = true
-    force_ipv6 = false
-    no_mdns = true
-    ice_no_mdns = true
-    ice_ignore_list = "vmnet,vboxnet0"
+    ice_lite = true
     external_ip = "178.44.116.78"
-    stun_server = "stun.l.google.com"
 }
 
 websockets: {
