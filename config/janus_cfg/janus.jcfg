@@ -48,7 +48,7 @@ general: {
 									# in any of the available transports.
 
 		# Generic settings
-	interface = "178.44.116.78"			# Interface to use (will be used in SDP)
+	#interface = "178.44.116.78"			# Interface to use (will be used in SDP)
 	#server_name = "MyJanusInstance"# Public name of this Janus instance
 									# as it will appear in an info request
 	#session_timeout = 60			# How long (in seconds) we should wait before
@@ -288,6 +288,8 @@ nat: {
 	#ice_keepalive_conncheck = true
 	#ice_lite = true
 	#ice_tcp = true
+
+    external_ip = "178.44.116.78"
 
 	# By default, Janus implements a grace period when detecting ICE
 	# failures in PeerConnections, to give time to applications to react
