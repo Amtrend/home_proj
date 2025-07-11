@@ -173,10 +173,10 @@ services:
 #    platform: linux/amd64
     command: ["/usr/local/bin/janus", "-F", "/usr/local/etc/janus"]
     container_name: janus
-    ports:
-      - "8088:8088"  # HTTP API
-      - "8188:8188"  # WebSockets (для WebRTC)
-      - "10000-10100:10000-10100/udp"  # RTP ports
+#    ports:
+#      - "8088:8088"  # HTTP API
+#      - "8188:8188"  # WebSockets (для WebRTC)
+#      - "10000-10100:10000-10100/udp"  # RTP ports
     volumes:
       - ./janus_cfg/janus.plugin.streaming.jcfg:/usr/local/etc/janus/janus.plugin.streaming.jcfg
       - ./janus_cfg/janus.jcfg:/usr/local/etc/janus/janus.jcfg

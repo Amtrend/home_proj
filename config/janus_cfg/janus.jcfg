@@ -6,7 +6,7 @@ general: {
 
 nat: {
     nice_debug = true
-    ice_lite = false
+    ice_lite = true
     force_ipv4 = true
     force_ipv6 = false
     no_mdns = true
