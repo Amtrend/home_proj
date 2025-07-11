@@ -2,13 +2,12 @@ general: {
     debug_level = 3
     log_to_file = false
     log_file = "/var/log/janus/janus.log"
-    rtp_host = "178.44.116.78"
-    rtcp_host = "178.44.116.78"
 }
 
 nat: {
     ice_lite = true
     external_ip = "178.44.116.78"
+    nat_1_1_mapping = "178.44.116.78"
 }
 
 websockets: {

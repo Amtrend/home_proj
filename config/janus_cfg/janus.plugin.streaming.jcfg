@@ -7,7 +7,6 @@ entrance-camera: {
   videoport = 5004
   videopt = 96
   videortpmap = "H264/90000"
-  host = "178.44.116.78"
 }
 
 back-entrance-camera: {
@@ -19,5 +18,4 @@ back-entrance-camera: {
   videoport = 5006
   videopt = 96
   videortpmap = "H264/90000"
-  host = "178.44.116.78"
 }
