@@ -8,6 +8,7 @@ nat: {
     ice_lite = true
     external_ip = "178.44.116.78"
     nat_1_1_mapping = "178.44.116.78"
+    ignore_mdns = true
 }
 
 websockets: {
