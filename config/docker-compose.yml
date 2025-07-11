@@ -179,7 +179,7 @@ services:
       - "10000-10100:10000-10100/udp"  # RTP ports
     volumes:
       - ./janus_cfg/janus.plugin.streaming.jcfg:/usr/local/etc/janus/janus.plugin.streaming.jcfg
-      - ./janus_cfg/janus.jcfg:/usr/local/etc/janus/janus.jcfg
+#      - ./janus_cfg/janus.jcfg:/usr/local/etc/janus/janus.jcfg
     networks:
       - home_default
   stream_en:
