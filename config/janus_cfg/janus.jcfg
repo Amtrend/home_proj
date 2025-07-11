@@ -2,8 +2,8 @@ general: {
     debug_level = 3
     log_to_file = false
     log_file = "/var/log/janus/janus.log"
-    "rtp_host" = "178.44.116.78"
-    "rtcp_host" = "178.44.116.78"
+    rtp_host = "178.44.116.78"
+    rtcp_host = "178.44.116.78"
 }
 
 nat: {
