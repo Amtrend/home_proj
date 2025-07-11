@@ -48,7 +48,7 @@ general: {
 									# in any of the available transports.
 
 		# Generic settings
-	interface = "178.44.116.78"			# Interface to use (will be used in SDP)
+	#interface = "1.2.3.4"			# Interface to use (will be used in SDP)
 	#server_name = "MyJanusInstance"# Public name of this Janus instance
 									# as it will appear in an info request
 	#session_timeout = 60			# How long (in seconds) we should wait before
@@ -179,6 +179,76 @@ general: {
 		"/opt/janus/lib64",
 		"/opt/janus/sbin"
 	]
+}
+
+# Certificate and key to use for DTLS (and passphrase if needed). If missing,
+# Janus will autogenerate a self-signed certificate to use. Notice that
+# self-signed certificates are fine for the purpose of WebRTC DTLS
+# connectivity, for the time being, at least until Identity Providers
+# are standardized and implemented in browsers. If for some reason you
+# want to enforce the DTLS stack in Janus to enforce valid certificates
+# from peers, though, you can do that setting 'dtls_accept_selfsigned' to
+# 'false' below: DO NOT TOUCH THAT IF YOU DO NOT KNOW WHAT YOU'RE DOING!
+# You can also configure the DTLS ciphers to offer: the default if not
+# set is "DEFAULT:!NULL:!aNULL:!SHA256:!SHA384:!aECDH:!AESGCM+AES256:!aPSK"
+# Finally, by default NIST P-256 certificates are generated (see #1997),
+# but RSA generation is still supported if you set 'rsa_private_key' to 'true'.
+certificates: {
+	#cert_pem = "/path/to/certificate.pem"
+	#cert_key = "/path/to/key.pem"
+	#cert_pwd = "secretpassphrase"
+	#dtls_accept_selfsigned = false
+	#dtls_ciphers = "your-desired-openssl-ciphers"
+	#rsa_private_key = false
+}
+
+# Media-related stuff: you can configure whether if you want to enable IPv6
+# support (and link-local IPs), the minimum size of the NACK queue (in ms,
+# defaults to 200ms) for retransmissions no matter the RTT, the range of
+# ports to use for RTP and RTCP (by default, no range is envisaged), the
+# starting MTU for DTLS (1200 by default, it adapts automatically),
+# how much time, in seconds, should pass with no media (audio or
+# video) being received before Janus notifies you about this (default=1s,
+# 0 disables these events entirely), how many lost packets should trigger a
+# 'slowlink' event to users (default=0, disabled), and how often, in milliseconds,
+# to send the Transport Wide Congestion Control feedback information back
+# to senders, if negotiated (default=200ms). Finally, if you're using BoringSSL
+# you can customize the frequency of retransmissions: OpenSSL has a fixed
+# value of 1 second (the default), while BoringSSL can override that. Notice
+# that lower values (e.g., 100ms) will typically get you faster connection
+# times, but may not work in case the RTT of the user is high: as such,
+# you should pick a reasonable trade-off (usually 2*max expected RTT).
+media: {
+	#ipv6 = true
+	#ipv6_linklocal = true
+	#min_nack_queue = 500
+	#rtp_port_range = "20000-40000"
+	#dtls_mtu = 1200
+	#no_media_timer = 1
+	#slowlink_threshold = 4
+	#twcc_period = 100
+	#dtls_timeout = 500
+
+	# Janus can do some optimizations on the NACK queue, specifically when
+	# keyframes are involved. Namely, you can configure Janus so that any
+	# time a keyframe is sent to a user, the NACK buffer for that connection
+	# is emptied. This allows Janus to ignore NACK requests for packets
+	# sent shortly before the keyframe was sent, since it can be assumed
+	# that the keyframe will restore a complete working image for the user
+	# anyway (which is the main reason why video retransmissions are typically
+	# required). While this optimization is known to work fine in most cases,
+	# it can backfire in some edge cases, and so is disabled by default.
+	#nack_optimizations = true
+
+	# If you need DSCP packet marking and prioritization, you can configure
+	# the 'dscp' property to a specific values, and Janus will try to
+	# set it on all outgoing packets using libnice. Normally, the specs
+	# suggest to use different values depending on whether audio, video
+	# or data are used, but since all PeerConnections in Janus are bundled,
+	# we can only use one. You can refer to this document for more info:
+	# https://tools.ietf.org/html/draft-ietf-tsvwg-rtcweb-qos-18#page-6
+	# That said, DON'T TOUCH THIS IF YOU DON'T KNOW WHAT IT MEANS!
+	#dscp = 46
 }
 
 # NAT-related stuff: specifically, you can configure the STUN/TURN
@@ -332,3 +402,56 @@ nat: {
 	#ignore_unreachable_ice_server = true
 }
 
+# You can choose which of the available plugins should be
+# enabled or not. Use the 'disable' directive to prevent Janus from
+# loading one or more plugins: use a comma separated list of plugin file
+# names to identify the plugins to disable. By default all available
+# plugins are enabled and loaded at startup.
+plugins: {
+	#disable = "libjanus_echotest.so,libjanus_recordplay.so"
+}
+
+# You can choose which of the available transports should be enabled or
+# not. Use the 'disable' directive to prevent Janus from loading one
+# or more transport: use a comma separated list of transport file names
+# to identify the transports to disable. By default all available
+# transports are enabled and loaded at startup.
+transports: {
+	#disable = "libjanus_rabbitmq.so"
+}
+
+# As a core feature, Janus can log either on the standard output, or to
+# a local file. Should you need more advanced logging functionality, you
+# can make use of one of the custom loggers, or write one yourself. Use the
+# 'disable' directive to prevent Janus from loading one or more loggers:
+# use a comma separated list of logger file names to identify the loggers
+# to disable. By default all available loggers are enabled and loaded at startup.
+loggers: {
+	#disable = "libjanus_jsonlog.so"
+}
+
+# Event handlers allow you to receive live events from Janus happening
+# in core and/or plugins. Since this can require some more resources,
+# the feature is disabled by default. Setting broadcast to yes will
+# enable them. You can then choose which of the available event handlers
+# should be loaded or not. Use the 'disable' directive to prevent Janus
+# from loading one or more event handlers: use a comma separated list of
+# file names to identify the event handlers to disable. By default, if
+# broadcast is set to yes all available event handlers are enabled and
+# loaded at startup. Finally, you can choose how often media statistics
+# (packets sent/received, losses, etc.) should be sent: by default it's
+# once per second (audio and video statistics sent separately), but may
+# considered too verbose, or you may want to limit the number of events,
+# especially if you have many PeerConnections active. To change this,
+# just set 'stats_period' to the number of seconds that should pass in
+# between statistics for each handle. Setting it to 0 disables them (but
+# not other media-related events). By default Janus sends single media
+# statistic events per media (audio, video and simulcast layers as separate
+# events): if you'd rather receive a single containing all media stats in a
+# single array, set 'combine_media_stats' to true.
+events: {
+	#broadcast = true
+	#combine_media_stats = true
+	#disable = "libjanus_sampleevh.so"
+	#stats_period = 5
+}
