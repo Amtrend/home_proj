@@ -278,9 +278,14 @@ media: {
 # if you do not enable ICE Lite as well), choose which interfaces should
 # be used for gathering candidates, and enable or disable the
 # internal libnice debugging, if needed.
+websockets: {
+    enabled = true
+    port = 8188
+    secure = false
+}
 nat: {
-	#stun_server = "stun.voip.eutelia.it"
-	#stun_port = 3478
+	stun_server = "stun.l.google.com"
+	stun_port = 19302
 	nice_debug = false
 	#full_trickle = true
 	#ice_nomination = "regular"
