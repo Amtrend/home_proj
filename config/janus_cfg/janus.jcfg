@@ -13,7 +13,7 @@ nat: {
     ice_no_mdns = true
     ice_ignore_list = "vmnet,vboxnet0"
     external_ip = "178.44.116.78"
-    stun_server = "stun:stun.l.google.com"
+    stun_server = "stun.l.google.com"
 }
 
 websockets: {
