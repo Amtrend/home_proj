@@ -222,13 +222,12 @@ media: {
 	#ipv6 = true
 	#ipv6_linklocal = true
 	#min_nack_queue = 500
-	rtp_port_range = "10000-10100"
+	#rtp_port_range = "20000-40000"
 	#dtls_mtu = 1200
 	#no_media_timer = 1
 	#slowlink_threshold = 4
 	#twcc_period = 100
 	#dtls_timeout = 500
-	no_rtcp = true
 
 	# Janus can do some optimizations on the NACK queue, specifically when
 	# keyframes are involved. Namely, you can configure Janus so that any
