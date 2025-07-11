@@ -1,201 +1,186 @@
 version: '3.3'
 services:
- svapp:
-  restart: always
-  container_name: svapp
-  build:
-   context: .
-   dockerfile: dockerfiles/docker_sva.conf
-  command: python ./main.py
-  volumes:
-   - ../code_save_video_app:/code_app
-   - ../media/archive/cam_entrance:/code_app/media_files
-   - ../logs/svapp:/code_app/logs
-  networks:
-   - home_default
-  env_file:
-   - .env
- csapp:
-  restart: always
-  container_name: csapp
-  build:
-   context: .
-   dockerfile: dockerfiles/docker_csa.conf
-  command: python ./main.py
-  volumes:
-   - ../code_stream_video_app:/code_app
-   - ../media/stream/cam_entrance:/code_app/media_files
-   - ../logs/csapp:/code_app/logs
-#   - /usr/bin/vcgencmd:/usr/bin/vcgencmd
-#   - /usr/lib/aarch64-linux-gnu/libvcos.so.0:/usr/lib/aarch64-linux-gnu/libvcos.so.0
-#   - /usr/lib/aarch64-linux-gnu/libvchiq_arm.so.0:/usr/lib/aarch64-linux-gnu/libvchiq_arm.so.0
-  networks:
-   - home_default
-  env_file:
-   - .env
-#  privileged: true
- django:
-  restart: always
-  container_name: django
-  volumes:
-   - ../code_site:/code_site
-   - ../collect_static:/collect_static
-   - ../media:/media
-   - ./sock:/sock
-  build:
-   context: .
-   dockerfile: dockerfiles/docker_django.conf
-  command: uwsgi --ini /etc/uwsgi.ini
-  links:
-   - db
-#  ports:
-#   - "127.0.0.1:8088:80"
-#   - "8282:8282"
-#   - "8000:8000"
-  depends_on:
-   - db
-  networks:
-   - home_default
-   - traefik_external
-  env_file:
-   - .env
-#  devices:
-#   - /dev/gpiomem:/dev/gpiomem
-#  cap_drop:
-#   - ALL
-#  cap_add:
-#   - SYS_RAWIO
- nginx:
-  restart: always
-  container_name: nginx
-  volumes:
-   - ../collect_static:/collect_static
-   - ../media:/media_static
-   - ./sock:/sock
-  build:
-   context: .
-   dockerfile: dockerfiles/docker_nginx.conf
-  depends_on:
-   - django
-  networks:
-   - home_default
-   - traefik_external
-#  ports:
-#   - "80:80"
-  labels:
-   # Common traefik labels
-   - "traefik.enable=true"
-   - "traefik.docker.network=traefik_external"
-   - "traefik.http.middlewares.home-redirect.redirectscheme.scheme=https"
-   # Router traefik labels for http hostname entrypoint
-   - "traefik.http.routers.http-home.middlewares=home-redirect@docker"
-   - "traefik.http.routers.http-home.rule=Host(`home.amtrend.ru`)"
-   - "traefik.http.routers.http-home.entrypoints=http"
-   - "traefik.http.routers.traefik-local.rule=Host(`192.168.0.9`)"
-   - "traefik.http.routers.traefik-local.entrypoints=http"
-   # Router traefik labels for https hostname entrypoint
-   - "traefik.http.routers.https-home.rule=Host(`home.amtrend.ru`)"
-   - "traefik.http.routers.https-home.tls.certResolver=le"
-   - "traefik.http.routers.https-home.entrypoints=https"
-#  entrypoint: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
- db:
-  image: mariadb
-  restart: always
-  container_name: db
-  env_file:
-   - .env
-#  ports:
-#   - "3306:3306"
-  volumes:
-   - ../db/initdb:/docker-entrypoint-initdb.d
-   - ../db/workdb:/var/lib/mysql
-  networks:
-   - home_default
-# phpmyadmin:
-#  image: phpmyadmin
-#  container_name: phpmyadmin
-#  links:
-#   - db
-#  environment:
-#   PMA_ARBITARY: 1
-#   PMA_HOST: db
-#   PMA_PORT: 3306
-#  restart: on-failure
-#  ports:
-#   - "8081:80"
-#  depends_on:
-#   - db
- redis:
-  restart: always
-  image: redis:alpine
-  container_name: redis
-#  ports:
-#   - "6379:6379"
-  env_file:
-   - .env
-  networks:
-   - home_default
-  command:
-   - /bin/sh
-   - -c
-   - redis-server --requirepass "$${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}"
- celery:
-  restart: always
-  container_name: celery
-  build:
-   context: .
-   dockerfile: dockerfiles/docker_celery.conf
-  command: celery -A smart_home worker -n alarm_entrance_worker -Q for_alarm_entrance_task -c 1 --loglevel=info --logfile=logs/celery.log
-  volumes:
-   - ../code_site:/code
-   - ../logs/celery:/code/logs
-  networks:
-   - home_default
-  depends_on:
-   - django
-   - redis
-   - db
-  links:
-   - redis
-   - db
-  env_file:
-   - .env
-#  devices:
-#   - /dev/gpiomem:/dev/gpiomem
-#  cap_drop:
-#   - ALL
-#  cap_add:
-#   - SYS_RAWIO
- csbeapp:
-  restart: always
-  container_name: csbeapp
-  build:
-   context: .
-   dockerfile: dockerfiles/docker_csa.conf
-  command: python ./main.py
-  volumes:
-   - ../code_be_stream_video_app:/code_app
-   - ../media/stream/cam_b_entrance:/code_app/media_files
-   - ../logs/csbeapp:/code_app/logs
-  networks:
-   - home_default
-  env_file:
-   - .env
- svbeapp:
-  restart: always
-  container_name: svbeapp
-  build:
-   context: .
-   dockerfile: dockerfiles/docker_sva.conf
-  command: python ./main.py
-  volumes:
-   - ../code_be_save_video_app:/code_app
-   - ../media/archive/cam_b_entrance:/code_app/media_files
-   - ../logs/svbeapp:/code_app/logs
-  networks:
-   - home_default
-  env_file:
-   - .env
+  svapp:
+    restart: unless-stopped
+    container_name: svapp
+    build:
+      context: .
+      dockerfile: dockerfiles/docker_sva.conf
+    command: python ./main.py
+    volumes:
+      - ../code_save_video_app:/code_app
+      - ../media/archive/cam_entrance:/code_app/media_files
+      - ../logs/svapp:/code_app/logs
+    networks:
+      - home_default
+  # csapp:
+  #  restart: always
+  #  container_name: csapp
+  #  build:
+  #   context: .
+  #   dockerfile: dockerfiles/docker_csa.conf
+  #  command: python ./main.py
+  #  volumes:
+  #   - ../code_stream_video_app:/code_app
+  #   - ../media/stream/cam_entrance:/code_app/media_files
+  #   - ../logs/csapp:/code_app/logs
+  #  networks:
+  #   - home_default
+  django:
+    restart: unless-stopped
+    container_name: django
+    volumes:
+      - ../code_site:/code_site
+      - ../collect_static:/collect_static
+      - ../media:/media
+      - ./sock:/sock
+    build:
+      context: .
+      dockerfile: dockerfiles/docker_django.conf
+    command: uwsgi --ini /etc/uwsgi.ini
+    links:
+      - db
+    depends_on:
+      - db
+    networks:
+      - home_default
+      - traefik_external
+  nginx:
+    restart: unless-stopped
+    container_name: nginx
+    volumes:
+      - ../collect_static:/collect_static
+      - ../media:/media_static
+      - ./sock:/sock
+    build:
+      context: .
+      dockerfile: dockerfiles/docker_nginx.conf
+    depends_on:
+      - django
+    networks:
+      - home_default
+      - traefik_external
+    labels:
+      # Common traefik labels
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik_external"
+      - "traefik.http.middlewares.home-redirect.redirectscheme.scheme=https"
+      # Router traefik labels for http hostname entrypoint
+      - "traefik.http.routers.http-home.middlewares=home-redirect@docker"
+      - "traefik.http.routers.http-home.rule=Host(`home.amtrend.ru`)"
+      - "traefik.http.routers.http-home.entrypoints=http"
+      - "traefik.http.routers.traefik-local.rule=Host(`192.168.0.9`)"
+      - "traefik.http.routers.traefik-local.entrypoints=http"
+      # Router traefik labels for https hostname entrypoint
+      - "traefik.http.routers.https-home.rule=Host(`home.amtrend.ru`)"
+      - "traefik.http.routers.https-home.tls.certResolver=le"
+      - "traefik.http.routers.https-home.entrypoints=https"
+  db:
+    image: mariadb
+    restart: unless-stopped
+    container_name: db
+    volumes:
+      - ../db/initdb:/docker-entrypoint-initdb.d
+      - ../db/workdb:/var/lib/mysql
+    networks:
+      - home_default
+    #  phpmyadmin:
+    #    image: phpmyadmin
+    #    container_name: phpmyadmin
+    #    links:
+    #      - db
+    #    environment:
+    #      PMA_ARBITARY: 1
+    #      PMA_HOST: db
+    #      PMA_PORT: 3306
+    #    restart: on-failure
+    #    ports:
+    #      - "8081:80"
+    #    depends_on:
+    #      - db
+  redis:
+    restart: unless-stopped
+    image: redis:alpine
+    container_name: redis
+    networks:
+      - home_default
+    command:
+      - /bin/sh
+      - -c
+      - redis-server --requirepass "$${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}"
+  celery:
+    restart: unless-stopped
+    container_name: celery
+    build:
+      context: .
+      dockerfile: dockerfiles/docker_celery.conf
+    command: celery -A smart_home worker -n alarm_entrance_worker -Q for_alarm_entrance_task -c 1 --loglevel=info --logfile=logs/celery.log
+    volumes:
+      - ../code_site:/code
+      - ../logs/celery:/code/logs
+    networks:
+      - home_default
+    depends_on:
+      - django
+      - redis
+      - db
+    links:
+      - redis
+      - db
+    # csbeapp:
+    #  restart: always
+    #  container_name: csbeapp
+    #  build:
+    #   context: .
+    #   dockerfile: dockerfiles/docker_csa.conf
+    #  command: python ./main.py
+    #  volumes:
+    #   - ../code_be_stream_video_app:/code_app
+    #   - ../media/stream/cam_b_entrance:/code_app/media_files
+    #   - ../logs/csbeapp:/code_app/logs
+    #  networks:
+    #   - home_default
+    #  env_file:
+    #   - .env
+  svbeapp:
+    restart: unless-stopped
+    container_name: svbeapp
+    build:
+      context: .
+      dockerfile: dockerfiles/docker_sva.conf
+    command: python ./main.py
+    volumes:
+      - ../code_be_save_video_app:/code_app
+      - ../media/archive/cam_b_entrance:/code_app/media_files
+      - ../logs/svbeapp:/code_app/logs
+    networks:
+      - home_default
+  janus:
+    image: canyan/janus-gateway:latest
+    command: ["/usr/local/bin/janus", "-F", "/usr/local/etc/janus"]
+    container_name: janus
+    #    ports:
+    #      - "8088:8088"  # HTTP API
+    #      - "8188:8188"  # WebSockets (для WebRTC)
+    #      - "10000-10100:10000-10100/udp"  # RTP ports
+    volumes:
+      - ./janus_cfg/janus.plugin.streaming.jcfg:/usr/local/etc/janus/janus.plugin.streaming.jcfg
+
+  stream_en:
+    image: jrottenberg/ffmpeg
+    container_name: stream_en
+    command: >
+      -rtsp_transport tcp -i ${RTSP_LINK} -an -c:v copy -f rtp -payload_type 96 rtp://janus:5004
+    depends_on:
+      - janus
+
+  stream_be:
+    image: jrottenberg/ffmpeg
+    container_name: stream_be
+    command: >
+      -rtsp_transport tcp -i ${RTSP_BE_LINK} -an -c:v copy -f rtp -payload_type 96 rtp://janus:5006
+    depends_on:
+      - janus
 
 networks:
   traefik_external:

@@ -1,0 +1,21 @@
+entrance-camera: {
+  type = "rtp"
+  id = 1
+  description = "Entrance Camera"
+  audio = false
+  video = true
+  videoport = 5004
+  videopt = 96
+  videortpmap = "H264/90000"
+}
+
+back-entrance-camera: {
+  type = "rtp"
+  id = 2
+  description = "Back Entrance Camera"
+  audio = false
+  video = true
+  videoport = 5006
+  videopt = 96
+  videortpmap = "H264/90000"
+}
