@@ -191,6 +191,7 @@ services:
       - "traefik.http.routers.janus.entrypoints=https"
       - "traefik.http.routers.janus.tls.certresolver=le"
       - "traefik.http.services.janus.loadbalancer.server.port=8188"
+      - "traefik.http.services.janus.loadbalancer.server.scheme=ws"
       - "traefik.docker.network=traefik_external"
   stream_en:
 #    image: jrottenberg/ffmpeg
