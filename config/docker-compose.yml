@@ -187,16 +187,16 @@ services:
       - traefik_external
     labels:
       - "traefik.enable=true"
+      - "traefik.docker.network=traefik_external"
       - "traefik.http.routers.janus.rule=Host(`home.amtrend.ru`) && PathPrefix(`/janus`)"
-      - "traefik.http.routers.janus-ws.entrypoints=websecure"
-      - "traefik.http.routers.janus-ws.tls=true"
-      - "traefik.http.services.janus-ws.loadbalancer.server.port=8188"
-      - "traefik.http.routers.janus-ws.service=janus-ws"
-      - "traefik.http.routers.janus-ws.middlewares=janus-headers"
-      - # Middleware для WebSocket
+      - "traefik.http.routers.janus.entrypoints=websecure"
+      - "traefik.http.routers.janus.tls.certresolver=le"
+      - "traefik.http.services.janus.loadbalancer.server.port=8188"
+      - "traefik.http.services.janus.loadbalancer.server.scheme=ws"
       - "traefik.http.middlewares.janus-headers.headers.customrequestheaders.X-Forwarded-Proto=https"
       - "traefik.http.middlewares.janus-headers.headers.customrequestheaders.Upgrade=websocket"
       - "traefik.http.middlewares.janus-headers.headers.customrequestheaders.Connection=upgrade"
+      - "traefik.http.routers.janus.middlewares=janus-headers"
   stream_en:
 #    image: jrottenberg/ffmpeg
     image: linuxserver/ffmpeg:arm64v8-6.1.1
