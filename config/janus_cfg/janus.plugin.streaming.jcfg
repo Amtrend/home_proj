@@ -1,13 +1,16 @@
 entrance-camera: {
-  type = "rtp"
+  type = "rtsp"
   id = 1
   description = "Entrance Camera"
   audio = false
   video = true
-  videoport = 5004
-  videopt = 96
-  videortpmap = "H264/90000"
-  srtp = false
+  url = rtsp://@192.168.0.20/live
+  rtsp_user = "admin"
+  rtsp_pwd = "admin"
+  rtsp_reconnect_delay = 5
+  rtsp_session_timeout = 0
+  rtsp_timeout = 10
+  rtsp_conn_timeout = 5
 }
 
 back-entrance-camera: {
@@ -16,8 +19,11 @@ back-entrance-camera: {
   description = "Back Entrance Camera"
   audio = false
   video = true
-  videoport = 5006
-  videopt = 96
-  videortpmap = "H264/90000"
-  srtp = false
+  url = rtsp://@192.168.0.19/live
+  rtsp_user = "admin"
+  rtsp_pwd = "admin"
+  rtsp_reconnect_delay = 5
+  rtsp_session_timeout = 0
+  rtsp_timeout = 10
+  rtsp_conn_timeout = 5
 }
