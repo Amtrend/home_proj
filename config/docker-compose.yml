@@ -184,7 +184,7 @@ services:
       - ./janus_cfg/janus.jcfg:/usr/local/etc/janus/janus.jcfg
     networks:
       - home_default
-#      - traefik_external
+      - traefik_external
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.janus.rule=Host(`home.amtrend.ru`) && PathPrefix(`/janus`)"
