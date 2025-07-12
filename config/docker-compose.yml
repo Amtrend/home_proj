@@ -184,7 +184,14 @@ services:
       - ./janus_cfg/janus.jcfg:/usr/local/etc/janus/janus.jcfg
     networks:
       - home_default
-      - traefik_external
+#      - traefik_external
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.janus.rule=Host(`home.amtrend.ru`) && PathPrefix(`/janus`)"
+      - "traefik.http.routers.janus.entrypoints=https"
+      - "traefik.http.routers.janus.tls.certresolver=le"
+      - "traefik.http.services.janus.loadbalancer.server.port=8188"
+      - "traefik.docker.network=traefik_external"
   stream_en:
 #    image: jrottenberg/ffmpeg
     image: linuxserver/ffmpeg:arm64v8-6.1.1
