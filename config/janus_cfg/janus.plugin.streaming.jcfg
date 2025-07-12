@@ -4,9 +4,7 @@ entrance-camera: {
   description = "Entrance Camera"
   audio = false
   video = true
-  url = "rtsp://192.168.0.20/live"
-  rtsp_user = "admin"
-  rtsp_pwd = "admin"
+  url = "rtsp://admin:admin@192.168.0.20/live"
   rtsp_reconnect_delay = 5
   rtsp_session_timeout = 0
   rtsp_timeout = 10
@@ -19,9 +17,7 @@ back-entrance-camera: {
   description = "Back Entrance Camera"
   audio = false
   video = true
-  url = "rtsp://192.168.0.19/live"
-  rtsp_user = "admin"
-  rtsp_pwd = "admin"
+  url = "rtsp://admin:admin@192.168.0.19/live"
   rtsp_reconnect_delay = 5
   rtsp_session_timeout = 0
   rtsp_timeout = 10
