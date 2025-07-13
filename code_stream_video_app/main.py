@@ -43,7 +43,7 @@ logger = logging.getLogger('my_logger')
 
 def main(rtsp_link, path_to_save):
     output_path = os.path.join(path_to_save, 'streaming.m3u8')
-    command = f"ffmpeg -i {rtsp_link} -c copy -hls_time 2 -hls_wrap 10 {output_path}"
+    command = f"ffmpeg -fflags nobuffer -flags low_delay -rtsp_transport tcp -stimeout 5000000 -i {rtsp_link} -an -c:v copy -hls_time 1 -hls_list_size 3 -hls_flags delete_segments+append_list -f hls {output_path}"
     save_video_proc = subprocess.run(command, shell=True, capture_output=True)
     if save_video_proc.returncode != 0:
         logger.debug(f"Ошибка при стримминге видео: {save_video_proc.stdout}")
