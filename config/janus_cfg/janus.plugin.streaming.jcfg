@@ -8,6 +8,7 @@ entrance-camera: {
   videopt = 96
   videortpmap = "H264/90000"
   srtp = false
+  ssrc = 12345678
 }
 
 back-entrance-camera: {
