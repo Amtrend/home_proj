@@ -38,7 +38,7 @@ def main(rtsp_link, path_to_save, video_length, size_limit):
     start_recording = datetime.datetime.now()
     file_name = f'{start_recording.strftime(f"%d_%m_%Y-%H_%M_%S")}.mp4'
     file_path = os.path.join(path_to_save, file_name)
-    command = f"ffmpeg -fflags nobuffer -flags low_delay -rtsp_transport tcp -stimeout 5000000 -i {rtsp_link} -an -c:v copy -t {video_length} {file_path}"
+    command = f"ffmpeg -rtsp_transport tcp -i {rtsp_link} -an -c:v copy -t {video_length} {file_path}"
     save_video_proc = subprocess.run(command, shell=True, capture_output=True)
     if save_video_proc.returncode == 0:
         worker_db = WorkDb()
