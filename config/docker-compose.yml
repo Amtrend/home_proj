@@ -15,19 +15,21 @@ services:
       - home_default
     env_file:
       - .env
-  # csapp:
-  #  restart: always
-  #  container_name: csapp
-  #  build:
-  #   context: .
-  #   dockerfile: dockerfiles/docker_csa.conf
-  #  command: python ./main.py
-  #  volumes:
-  #   - ../code_stream_video_app:/code_app
-  #   - ../media/stream/cam_entrance:/code_app/media_files
-  #   - ../logs/csapp:/code_app/logs
-  #  networks:
-  #   - home_default
+  csapp:
+    restart: always
+    container_name: csapp
+    build:
+      context: .
+      dockerfile: dockerfiles/docker_csa.conf
+    command: python ./main.py
+    volumes:
+      - ../code_stream_video_app:/code_app
+      - ../media/stream/cam_entrance:/code_app/media_files
+      - ../logs/csapp:/code_app/logs
+    networks:
+      - home_default
+    env_file:
+      - .env
   django:
     restart: unless-stopped
     container_name: django
@@ -137,21 +139,21 @@ services:
       - db
     env_file:
       - .env
-    # csbeapp:
-    #  restart: always
-    #  container_name: csbeapp
-    #  build:
-    #   context: .
-    #   dockerfile: dockerfiles/docker_csa.conf
-    #  command: python ./main.py
-    #  volumes:
-    #   - ../code_be_stream_video_app:/code_app
-    #   - ../media/stream/cam_b_entrance:/code_app/media_files
-    #   - ../logs/csbeapp:/code_app/logs
-    #  networks:
-    #   - home_default
-    #  env_file:
-    #   - .env
+  csbeapp:
+    restart: always
+    container_name: csbeapp
+    build:
+      context: .
+      dockerfile: dockerfiles/docker_csa.conf
+    command: python ./main.py
+    volumes:
+      - ../code_be_stream_video_app:/code_app
+      - ../media/stream/cam_b_entrance:/code_app/media_files
+      - ../logs/csbeapp:/code_app/logs
+    networks:
+      - home_default
+    env_file:
+      - .env
   svbeapp:
     restart: unless-stopped
     container_name: svbeapp
@@ -168,9 +170,9 @@ services:
     env_file:
       - .env
   janus:
-#    image: canyan/janus-gateway:latest
+    #    image: canyan/janus-gateway:latest
     image: sucwangsr/janus-webrtc-gateway-docker:1.3.1-arm64
-#    platform: linux/amd64
+    #    platform: linux/amd64
     command: ["/usr/local/bin/janus", "-F", "/usr/local/etc/janus"]
     container_name: janus
     ports:
@@ -184,20 +186,20 @@ services:
       - ./janus_cfg/janus.jcfg:/usr/local/etc/janus/janus.jcfg
     networks:
       - home_default
-#      - traefik_external
-#    labels:
-#      - "traefik.enable=true"
-#      - "traefik.http.routers.janus.rule=Host(`home.amtrend.ru`) && PathPrefix(`/janus`)"
-#      - "traefik.http.routers.janus.entrypoints=https"
-#      - "traefik.http.routers.janus.tls.certresolver=le"
-#      - "traefik.http.routers.janus.middlewares=wsforward@docker"
-#      - "traefik.http.services.janus.loadbalancer.server.scheme=http"
-#      - "traefik.http.services.janus.loadbalancer.server.port=8188"
-#      - "traefik.docker.network=traefik_external"
+  #      - traefik_external
+  #    labels:
+  #      - "traefik.enable=true"
+  #      - "traefik.http.routers.janus.rule=Host(`home.amtrend.ru`) && PathPrefix(`/janus`)"
+  #      - "traefik.http.routers.janus.entrypoints=https"
+  #      - "traefik.http.routers.janus.tls.certresolver=le"
+  #      - "traefik.http.routers.janus.middlewares=wsforward@docker"
+  #      - "traefik.http.services.janus.loadbalancer.server.scheme=http"
+  #      - "traefik.http.services.janus.loadbalancer.server.port=8188"
+  #      - "traefik.docker.network=traefik_external"
   stream_en:
-#    image: jrottenberg/ffmpeg
+    #    image: jrottenberg/ffmpeg
     image: linuxserver/ffmpeg:arm64v8-6.1.1
-#    platform: linux/amd64
+    #    platform: linux/amd64
     container_name: stream_en
     command: >
       -rtsp_transport tcp -i ${RTSP_LINK} -an -c:v copy -f rtp -payload_type 96 rtp://janus:5004
@@ -206,9 +208,9 @@ services:
     networks:
       - home_default
   stream_be:
-#    image: jrottenberg/ffmpeg
+    #    image: jrottenberg/ffmpeg
     image: linuxserver/ffmpeg:arm64v8-6.1.1
-#    platform: linux/amd64
+    #    platform: linux/amd64
     container_name: stream_be
     command: >
       -rtsp_transport tcp -i ${RTSP_BE_LINK} -an -c:v copy -f rtp -payload_type 96 rtp://janus:5006
