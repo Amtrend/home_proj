@@ -16,7 +16,7 @@ services:
     env_file:
       - .env
   csapp:
-    restart: always
+    restart: unless-stopped
     container_name: csapp
     build:
       context: .
@@ -140,7 +140,7 @@ services:
     env_file:
       - .env
   csbeapp:
-    restart: always
+    restart: unless-stopped
     container_name: csbeapp
     build:
       context: .
@@ -186,6 +186,7 @@ services:
       - ./janus_cfg/janus.jcfg:/usr/local/etc/janus/janus.jcfg
     networks:
       - home_default
+    restart: unless-stopped
   #      - traefik_external
   #    labels:
   #      - "traefik.enable=true"
@@ -207,6 +208,7 @@ services:
       - janus
     networks:
       - home_default
+    restart: unless-stopped
   stream_be:
     #    image: jrottenberg/ffmpeg
     image: linuxserver/ffmpeg:arm64v8-6.1.1
@@ -218,7 +220,7 @@ services:
       - janus
     networks:
       - home_default
-
+    restart: unless-stopped
 networks:
   traefik_external:
     external: true
