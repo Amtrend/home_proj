@@ -7,7 +7,6 @@ entrance-camera: {
   videoport = 5004
   videopt = 96
   videortpmap = "H264/90000"
-  videosimulcast = true
   threads = 4
   ssrc = 1
 }
@@ -21,7 +20,6 @@ back-entrance-camera: {
   videoport = 5006
   videopt = 96
   videortpmap = "H264/90000"
-  videosimulcast = true
   threads = 4
   ssrc = 2
 }
