@@ -9,6 +9,7 @@ entrance-camera: {
   videortpmap = "H264/90000"
   threads = 4
   ssrc = 11111111
+  srtp = false
 }
 
 back-entrance-camera: {
@@ -22,4 +23,5 @@ back-entrance-camera: {
   videortpmap = "H264/90000"
   threads = 4
   ssrc = 22222222
+  srtp = false
 }
