@@ -203,7 +203,7 @@ services:
     #    platform: linux/amd64
     container_name: stream_en
     command: >
-      -rtsp_transport tcp -i ${RTSP_LINK} -an -c:v copy -f rtp -payload_type 96 rtp://janus:5004
+      -rtsp_transport tcp -i ${RTSP_LINK} -an -c:v copy -f rtp -payload_type 96 rtp://janus:5004?ssrc=11111111
 #      -rtsp_transport tcp -i ${RTSP_LINK} -an -c:v copy -ssrc 1 -f rtp -payload_type 96 rtp://janus:5004
     depends_on:
       - janus
@@ -216,7 +216,7 @@ services:
     #    platform: linux/amd64
     container_name: stream_be
     command: >
-      -rtsp_transport tcp -i ${RTSP_BE_LINK} -an -c:v copy -f rtp -payload_type 96 rtp://janus:5006
+      -rtsp_transport tcp -i ${RTSP_BE_LINK} -an -c:v copy -f rtp -payload_type 96 rtp://janus:5006?ssrc=22222222
 #      -rtsp_transport tcp -i ${RTSP_BE_LINK} -an -c:v copy -ssrc 2 -f rtp -payload_type 96 rtp://janus:5006
     depends_on:
       - janus
