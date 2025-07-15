@@ -2,7 +2,7 @@ webrtc: true
 rtsp: true
 hls: false
 
-webrtcICEServers2:
+webrtcICEServers:
   - url: stun:stun.l.google.com:19302
 
 paths:
