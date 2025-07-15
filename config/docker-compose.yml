@@ -169,60 +169,86 @@ services:
       - home_default
     env_file:
       - .env
-  janus:
-    #    image: canyan/janus-gateway:latest
-    image: sucwangsr/janus-webrtc-gateway-docker:1.3.1-arm64
-    #    platform: linux/amd64
-    command: ["/usr/local/bin/janus", "-F", "/usr/local/etc/janus"]
-    container_name: janus
+  mediamtx:
+    image: bluenviron/mediamtx:1.13.0
+    container_name: mediamtx
+    restart: unless-stopped
     ports:
-      - "8088:8088"  # HTTP API
-      - "8188:8188"  # WebSockets (для WebRTC)
-      - "10000-10100:10000-10100/udp"  # RTP ports
-      - "5004:5004/udp"
-      - "5006:5006/udp"
+      - "8554:8554"   # RTSP
+      - "8888:8888"   # HLS
+      - "8889:8889"   # WebRTC HTTP
+      - "8189:8189/udp" # WebRTC ICE
     volumes:
-      - ./janus_cfg/janus.plugin.streaming.jcfg:/usr/local/etc/janus/janus.plugin.streaming.jcfg
-      - ./janus_cfg/janus.jcfg:/usr/local/etc/janus/janus.jcfg
+      - ./mediamtx/mediamtx.yml:/mediamtx.yml
+    command: ["-c", "/mediamtx.yml"]
     networks:
       - home_default
+  coturn:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.coturn
+    container_name: coturn
     restart: unless-stopped
-  #      - traefik_external
-  #    labels:
-  #      - "traefik.enable=true"
-  #      - "traefik.http.routers.janus.rule=Host(`home.amtrend.ru`) && PathPrefix(`/janus`)"
-  #      - "traefik.http.routers.janus.entrypoints=https"
-  #      - "traefik.http.routers.janus.tls.certresolver=le"
-  #      - "traefik.http.routers.janus.middlewares=wsforward@docker"
-  #      - "traefik.http.services.janus.loadbalancer.server.scheme=http"
-  #      - "traefik.http.services.janus.loadbalancer.server.port=8188"
-  #      - "traefik.docker.network=traefik_external"
-  stream_en:
-    #    image: jrottenberg/ffmpeg
-    image: linuxserver/ffmpeg:arm64v8-6.1.1
-    #    platform: linux/amd64
-    container_name: stream_en
-    command: >
-      -rtsp_transport tcp -i ${RTSP_LINK} -an -c:v copy -ssrc 11111111 -f rtp -payload_type 96 rtp://janus:5004
-#      -rtsp_transport tcp -i ${RTSP_LINK} -an -c:v copy -ssrc 1 -f rtp -payload_type 96 rtp://janus:5004
-    depends_on:
-      - janus
+    ports:
+      - "3478:3478/udp"
+      - "3478:3478/tcp"
+    command: [ "--no-auth", "--listening-port=3478", "--verbose" ]
     networks:
       - home_default
-    restart: unless-stopped
-  stream_be:
-    #    image: jrottenberg/ffmpeg
-    image: linuxserver/ffmpeg:arm64v8-6.1.1
-    #    platform: linux/amd64
-    container_name: stream_be
-    command: >
-      -rtsp_transport tcp -i ${RTSP_BE_LINK} -an -c:v copy -ssrc 22222222 -f rtp -payload_type 96 rtp://janus:5006
-#      -rtsp_transport tcp -i ${RTSP_BE_LINK} -an -c:v copy -ssrc 2 -f rtp -payload_type 96 rtp://janus:5006
-    depends_on:
-      - janus
-    networks:
-      - home_default
-    restart: unless-stopped
+#  janus:
+#    #    image: canyan/janus-gateway:latest
+#    image: sucwangsr/janus-webrtc-gateway-docker:1.3.1-arm64
+#    #    platform: linux/amd64
+#    command: ["/usr/local/bin/janus", "-F", "/usr/local/etc/janus"]
+#    container_name: janus
+#    ports:
+#      - "8088:8088"  # HTTP API
+#      - "8188:8188"  # WebSockets (для WebRTC)
+#      - "10000-10100:10000-10100/udp"  # RTP ports
+#      - "5004:5004/udp"
+#      - "5006:5006/udp"
+#    volumes:
+#      - ./janus_cfg/janus.plugin.streaming.jcfg:/usr/local/etc/janus/janus.plugin.streaming.jcfg
+#      - ./janus_cfg/janus.jcfg:/usr/local/etc/janus/janus.jcfg
+#    networks:
+#      - home_default
+#    restart: unless-stopped
+#  #      - traefik_external
+#  #    labels:
+#  #      - "traefik.enable=true"
+#  #      - "traefik.http.routers.janus.rule=Host(`home.amtrend.ru`) && PathPrefix(`/janus`)"
+#  #      - "traefik.http.routers.janus.entrypoints=https"
+#  #      - "traefik.http.routers.janus.tls.certresolver=le"
+#  #      - "traefik.http.routers.janus.middlewares=wsforward@docker"
+#  #      - "traefik.http.services.janus.loadbalancer.server.scheme=http"
+#  #      - "traefik.http.services.janus.loadbalancer.server.port=8188"
+#  #      - "traefik.docker.network=traefik_external"
+#  stream_en:
+#    #    image: jrottenberg/ffmpeg
+#    image: linuxserver/ffmpeg:arm64v8-6.1.1
+#    #    platform: linux/amd64
+#    container_name: stream_en
+#    command: >
+#      -rtsp_transport tcp -i ${RTSP_LINK} -an -c:v copy -ssrc 11111111 -f rtp -payload_type 96 rtp://janus:5004
+##      -rtsp_transport tcp -i ${RTSP_LINK} -an -c:v copy -ssrc 1 -f rtp -payload_type 96 rtp://janus:5004
+#    depends_on:
+#      - janus
+#    networks:
+#      - home_default
+#    restart: unless-stopped
+#  stream_be:
+#    #    image: jrottenberg/ffmpeg
+#    image: linuxserver/ffmpeg:arm64v8-6.1.1
+#    #    platform: linux/amd64
+#    container_name: stream_be
+#    command: >
+#      -rtsp_transport tcp -i ${RTSP_BE_LINK} -an -c:v copy -ssrc 22222222 -f rtp -payload_type 96 rtp://janus:5006
+##      -rtsp_transport tcp -i ${RTSP_BE_LINK} -an -c:v copy -ssrc 2 -f rtp -payload_type 96 rtp://janus:5006
+#    depends_on:
+#      - janus
+#    networks:
+#      - home_default
+#    restart: unless-stopped
 networks:
   traefik_external:
     external: true
