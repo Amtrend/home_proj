@@ -192,7 +192,7 @@ services:
       - "3478:3478/tcp"
     volumes:
       - ./coturn/turnserver.conf:/etc/turnserver.conf
-    command: ["turnserver", "-c", "/etc/turnserver.conf"]
+    command: ["turnserver", "-v", "-c", "/etc/turnserver.conf"]
     networks:
       - home_default
 #  janus:
