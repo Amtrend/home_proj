@@ -1,9 +1,14 @@
-server:
-  webrtcIceServers:
-    - urls: [stun:coturn:3478]
-  rtsp: yes
-  hls: no
-  webrtc: yes
+webrtc:
+  enabled: yes
+  iceServers:
+    - urls:
+        - stun:coturn:3478
+
+rtsp:
+  enabled: yes
+
+hls:
+  enabled: no
 
 paths:
   cam_entrance:
