@@ -6,7 +6,7 @@ webrtcICEServers2:
   - url: stun:home.amtrend.ru:3478
   - url: turn:home.amtrend.ru:3478
     username: webrtcuser
-    credential: webrtcpass
+    password: webrtcpass
 
 paths:
   cam_entrance:
