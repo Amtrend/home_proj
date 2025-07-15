@@ -3,10 +3,7 @@ rtsp: true
 hls: false
 
 webrtcICEServers2:
-  - url: stun:home.amtrend.ru:3478
-  - url: turn:home.amtrend.ru:3478
-    username: webrtcuser
-    password: webrtcpass
+  - url: stun:stun.l.google.com:19302
 
 paths:
   cam_entrance:
