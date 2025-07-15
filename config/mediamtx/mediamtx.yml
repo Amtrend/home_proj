@@ -4,8 +4,7 @@ webrtc:
     - urls:
         - stun:coturn:3478
 
-rtsp:
-  enabled: true
+rtsp: true
 
 hls: false
 
