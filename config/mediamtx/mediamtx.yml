@@ -2,7 +2,7 @@ webrtc: true
 rtsp: true
 hls: false
 
-webrtcIceServers:
+webrtcICEServers:
   - urls:
       - stun:coturn:3478
 
