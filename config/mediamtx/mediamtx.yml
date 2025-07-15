@@ -5,10 +5,10 @@ webrtc:
         - stun:coturn:3478
 
 rtsp:
-  enabled: yes
+  enabled: true
 
 hls:
-  enabled: no
+  enabled: false
 
 paths:
   cam_entrance:
