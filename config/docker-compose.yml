@@ -190,6 +190,7 @@ services:
     ports:
       - "3478:3478/udp"
       - "3478:3478/tcp"
+      - "49160-49200:49160-49200/udp"
     volumes:
       - ./coturn/coturn.conf:/etc/turnserver.conf
     command: ["turnserver", "-v", "-c", "/etc/turnserver.conf"]
