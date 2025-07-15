@@ -180,7 +180,7 @@ services:
       - "8189:8189/udp" # WebRTC ICE
     volumes:
       - ./mediamtx/mediamtx.yml:/mediamtx.yml
-    command: ["-c", "/mediamtx.yml"]
+    command: ["/mediamtx.yml"]
     networks:
       - home_default
   coturn:
