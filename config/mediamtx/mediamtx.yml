@@ -3,7 +3,7 @@ rtsp: true
 hls: false
 
 webrtcICEServers2:
-  - url: stun:coturn:3478
+  - url: stun:home.amtrend.ru:3478
 
 paths:
   cam_entrance:
