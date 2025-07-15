@@ -184,15 +184,15 @@ services:
     networks:
       - home_default
   coturn:
-    build:
-      context: .
-      dockerfile: dockerfiles/Dockerfile.coturn
+    image: coturn/coturn:4
     container_name: coturn
     restart: unless-stopped
     ports:
       - "3478:3478/udp"
       - "3478:3478/tcp"
-    command: [ "--no-auth", "--listening-port=3478", "--verbose" ]
+    volumes:
+      - ./coturn/turnserver.conf:/etc/turnserver.conf
+    command: ["turnserver", "-c", "/etc/turnserver.conf"]
     networks:
       - home_default
 #  janus:
