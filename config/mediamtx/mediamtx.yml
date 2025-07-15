@@ -2,9 +2,8 @@ webrtc: true
 rtsp: true
 hls: false
 
-webrtcICEServers:
-  - urls:
-      - stun:home.amtrend.ru:3478
+webrtcICEServers2:
+  - url: stun:stun.l.google.com:19302
 
 paths:
   cam_entrance:
