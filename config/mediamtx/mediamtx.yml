@@ -3,7 +3,8 @@ rtsp: true
 hls: false
 
 webrtcICEServers:
-  - url: stun:stun.l.google.com:19302
+  - url:
+    - stun:stun.l.google.com:19302
 
 paths:
   cam_entrance:
