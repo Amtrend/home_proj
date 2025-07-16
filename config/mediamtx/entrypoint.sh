@@ -1,7 +1,8 @@
 #!/bin/sh
-
-# Подставим переменные окружения в шаблон
 envsubst < /mediamtx.template.yml > /mediamtx.yml
 
-# Запускаем Mediamtx с готовым файлом
+echo "========== GENERATED CONFIG =========="
+cat /mediamtx.yml
+echo "======================================"
+
 exec /mediamtx
