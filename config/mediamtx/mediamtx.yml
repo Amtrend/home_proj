@@ -10,6 +10,6 @@ webrtcICEServers2:
 
 paths:
   cam_entrance:
-    source: rtsp://admin:admin@192.168.0.20/live"
+    source: rtsp://admin:admin@192.168.0.20/live
   cam_back_entrance:
-    source: rtsp://admin:admin@192.168.0.19/live"
+    source: rtsp://admin:admin@192.168.0.19/live
