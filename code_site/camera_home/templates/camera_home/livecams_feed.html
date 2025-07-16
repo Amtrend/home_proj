@@ -62,7 +62,7 @@
                 };
 
                 // Запрос SDP Offer у сервера MediaMTX (WHEP)
-                const url = `${window.location.protocol}//${window.location.host}/${cameraPath}/whep`;
+                const url = `${window.location.protocol}//${window.location.host}/webrtc/${cameraPath}/whep`;
 
                 // Создаем SDP Offer
                 const offer = await pc.createOffer();
