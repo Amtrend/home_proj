@@ -179,7 +179,10 @@ services:
       - "8889:8889"   # WebRTC HTTP
       - "8189:8189/udp" # WebRTC ICE
     volumes:
-      - ./mediamtx/mediamtx.yml:/mediamtx.yml
+#      - ./mediamtx/mediamtx.yml:/mediamtx.yml
+      - ./mediamtx/mediamtx.template.yml:/mediamtx.template.yml
+      - ./entrypoint.sh:/entrypoint.sh
+#    command: ["/entrypoint.sh"]
     command: ["/mediamtx.yml"]
     networks:
       - home_default
