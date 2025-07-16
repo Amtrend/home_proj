@@ -8,13 +8,6 @@ webrtcICEServers2:
     username: webrtcuser
     password: webrtcpass
 
-webrtc:
-  iceTimeout: 30
-  dtlsTimeout: 30
-  maxLate: 100
-  maxBufferSize: 1048576
-  jitterBufferSize: 200
-
 paths:
   cam_entrance:
     source: rtsp://admin:admin@192.168.0.20/live
