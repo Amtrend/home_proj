@@ -182,8 +182,8 @@ services:
 #      - ./mediamtx/mediamtx.yml:/mediamtx.yml
       - ./mediamtx/mediamtx.template.yml:/mediamtx.template.yml
       - ./mediamtx/entrypoint.sh:/entrypoint.sh
-#    command: ["/entrypoint.sh"]
-    command: ["/mediamtx.yml"]
+    command: ["/entrypoint.sh"]
+#    command: ["/mediamtx.yml"]
     networks:
       - home_default
     env_file:
