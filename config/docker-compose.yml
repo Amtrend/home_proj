@@ -181,7 +181,7 @@ services:
     volumes:
 #      - ./mediamtx/mediamtx.yml:/mediamtx.yml
       - ./mediamtx/mediamtx.template.yml:/mediamtx.template.yml
-      - ./entrypoint.sh:/entrypoint.sh
+      - ./mediamtx/entrypoint.sh:/entrypoint.sh
 #    command: ["/entrypoint.sh"]
     command: ["/mediamtx.yml"]
     networks:
