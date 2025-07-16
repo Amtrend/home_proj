@@ -11,11 +11,9 @@ webrtcICEServers2:
 paths:
   cam_entrance:
     source: rtsp://admin:admin@192.168.0.20/live
-    readBufferSize: 2097152
     reconnect: true
     reconnectInterval: 10
   cam_back_entrance:
     source: rtsp://admin:admin@192.168.0.19/live
-    readBufferSize: 2097152
     reconnect: true
     reconnectInterval: 10
