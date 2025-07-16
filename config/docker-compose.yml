@@ -183,6 +183,8 @@ services:
     command: ["/mediamtx.yml"]
     networks:
       - home_default
+    env_file:
+      - .env
   coturn:
     image: coturn/coturn:4
     container_name: coturn
