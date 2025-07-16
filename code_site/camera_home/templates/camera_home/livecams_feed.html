@@ -31,7 +31,6 @@
     </section>
     {% if request.user.is_superuser %}
         <script>
-            // ICE сервера — STUN и TURN
             const iceServers = [
                 { urls: "stun:home.amtrend.ru:3478" },
                 {
@@ -41,63 +40,64 @@
                 }
             ];
 
-            // Функция для запуска WebRTC потока с камеры
-            async function startWebRTC(videoElemId, cameraPath) {
-                const video = document.getElementById(videoElemId);
+            // Общая функция запуска WebRTC-потока
+            async function startWebRTC(videoElementId, cameraPath) {
+                const video = document.getElementById(videoElementId);
                 if (!video) {
-                    console.error("Video element not found:", videoElemId);
+                    console.error(`Video element with id '${videoElementId}' not found`);
                     return;
                 }
 
+                const pc = new RTCPeerConnection({ iceServers });
+
+                pc.ontrack = (event) => {
+                    if (video.srcObject !== event.streams[0]) {
+                        video.srcObject = event.streams[0];
+                        video.play().catch(e => console.warn("Video play error:", e));
+                    }
+                };
+
+                // WHEP endpoint
+                const url = `${window.location.origin}/${cameraPath}/whep`;
+
                 try {
-                    const pc = new RTCPeerConnection({ iceServers });
+                    // Создаём SDP offer
+                    const offer = await pc.createOffer();
+                    await pc.setLocalDescription(offer);
 
-                    pc.ontrack = event => {
-                        if (video.srcObject !== event.streams[0]) {
-                            video.srcObject = event.streams[0];
-                            video.play().catch(e => console.warn("Play error", e));
-                        }
-                    };
-
-                    // Подключаем пустой канал данных, чтобы быстрее инициировать ICE
-                    pc.createDataChannel("dummy");
-
-                    // Создаем offer и устанавливаем его как локальное описание
-                    await pc.setLocalDescription(await pc.createOffer());
-
-                    // ⏱️ Ждём немного, чтобы ICE кандидаты успели собраться
-                    await new Promise(resolve => setTimeout(resolve, 300));
-
-                    // URL WHEP запроса (через Nginx-прокси, путь важен!)
-                    const url = `${window.location.protocol}//${window.location.host}/webrtc/${cameraPath}/whep`;
-
-                    // Отправляем offer и получаем answer от MediaMTX
+                    // Отправляем offer на сервер и получаем answer
                     const response = await fetch(url, {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/sdp",
-                            "Accept": "application/sdp"
+                            "Accept": "application/sdp",
                         },
-                        body: pc.localDescription.sdp
+                        body: offer.sdp
                     });
 
+                    if (!response.ok) {
+                        throw new Error(`WHEP server error: ${response.status} ${response.statusText}`);
+                    }
+
                     const answerSdp = await response.text();
-                    console.log(`[${cameraPath}] Answer SDP:`, answerSdp);
+                    console.log(`[${cameraPath}] Answer SDP:\n`, answerSdp);
 
-                    const answerDesc = new RTCSessionDescription({ type: "answer", sdp: answerSdp });
-                    await pc.setRemoteDescription(answerDesc);
-
+                    await pc.setRemoteDescription(new RTCSessionDescription({
+                        type: "answer",
+                        sdp: answerSdp
+                    }));
                 } catch (err) {
-                    console.error(`[${cameraPath}] WebRTC error:`, err);
+                    console.error(`WebRTC error for ${cameraPath}:`, err);
                 }
             }
 
-            // Запускаем обе камеры
-            document.addEventListener("DOMContentLoaded", () => {
+            // Запуск двух камер
+            window.addEventListener("DOMContentLoaded", () => {
                 startWebRTC("cam_entrance_video", "cam_entrance");
                 startWebRTC("cam_b_entrance_video", "cam_back_entrance");
             });
         </script>
+
 
         {#        <script>#}
         {#            Janus.init({#}
