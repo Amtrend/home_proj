@@ -40,63 +40,73 @@
                 }
             ];
 
-            // Общая функция запуска WebRTC-потока
-            async function startWebRTC(videoElementId, cameraPath) {
-                const video = document.getElementById(videoElementId);
+            async function startWebRTC(videoElemId, cameraPath) {
+                const video = document.getElementById(videoElemId);
                 if (!video) {
-                    console.error(`Video element with id '${videoElementId}' not found`);
+                    console.error("Video element not found:", videoElemId);
                     return;
                 }
 
                 const pc = new RTCPeerConnection({ iceServers });
 
-                pc.ontrack = (event) => {
+                pc.ontrack = event => {
                     if (video.srcObject !== event.streams[0]) {
                         video.srcObject = event.streams[0];
-                        video.play().catch(e => console.warn("Video play error:", e));
+                        video.play().catch(e => console.warn("Play error", e));
                     }
                 };
 
-                // WHEP endpoint
-                const url = `${window.location.origin}/${cameraPath}/whep`;
-
                 try {
-                    // Создаём SDP offer
                     const offer = await pc.createOffer();
                     await pc.setLocalDescription(offer);
 
-                    // Отправляем offer на сервер и получаем answer
+                    // Ждём завершения ICE Gathering
+                    await new Promise(resolve => {
+                        if (pc.iceGatheringState === "complete") {
+                            resolve();
+                        } else {
+                            const checkState = () => {
+                                if (pc.iceGatheringState === "complete") {
+                                    pc.removeEventListener("icegatheringstatechange", checkState);
+                                    resolve();
+                                }
+                            };
+                            pc.addEventListener("icegatheringstatechange", checkState);
+                        }
+                    });
+
+                    // Формируем URL для запроса
+                    const url = `${window.location.protocol}//${window.location.host}/webrtc/${cameraPath}/whep`;
+
+                    // Отправляем SDP на сервер
                     const response = await fetch(url, {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/sdp",
                             "Accept": "application/sdp",
                         },
-                        body: offer.sdp
+                        body: pc.localDescription.sdp
                     });
 
                     if (!response.ok) {
-                        throw new Error(`WHEP server error: ${response.status} ${response.statusText}`);
+                        const text = await response.text();
+                        throw new Error(`WHEP server error: ${response.status} - ${text}`);
                     }
 
                     const answerSdp = await response.text();
-                    console.log(`[${cameraPath}] Answer SDP:\n`, answerSdp);
+                    const answerDesc = new RTCSessionDescription({ type: "answer", sdp: answerSdp });
+                    await pc.setRemoteDescription(answerDesc);
 
-                    await pc.setRemoteDescription(new RTCSessionDescription({
-                        type: "answer",
-                        sdp: answerSdp
-                    }));
                 } catch (err) {
                     console.error(`WebRTC error for ${cameraPath}:`, err);
                 }
             }
 
-            // Запуск двух камер
-            window.addEventListener("DOMContentLoaded", () => {
-                startWebRTC("cam_entrance_video", "cam_entrance");
-                startWebRTC("cam_b_entrance_video", "cam_back_entrance");
-            });
+            // Запуск всех камер
+            startWebRTC("cam_entrance_video_new", "cam_entrance");
+            startWebRTC("cam_b_entrance_video_new", "cam_back_entrance");
         </script>
+
 
 
         {#        <script>#}
