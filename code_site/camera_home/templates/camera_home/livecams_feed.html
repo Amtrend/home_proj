@@ -40,7 +40,6 @@
         }
     ];
 
-    // Функция запуска WebRTC соединения
     async function startWebRTC(videoElemId, cameraPath) {
         const video = document.getElementById(videoElemId);
         if (!video) {
@@ -50,7 +49,10 @@
 
         const pc = new RTCPeerConnection({ iceServers });
 
-        pc.ontrack = (event) => {
+        // 🔥 ВАЖНО: запрашиваем получение видео
+        pc.addTransceiver('video', { direction: 'recvonly' });
+
+        pc.ontrack = event => {
             if (video.srcObject !== event.streams[0]) {
                 console.log(`[${cameraPath}] Got remote stream`);
                 video.srcObject = event.streams[0];
@@ -87,12 +89,12 @@
         }
     }
 
-    // Запуск камер
     document.addEventListener("DOMContentLoaded", () => {
         startWebRTC("cam_entrance_video_new", "cam_entrance");
         startWebRTC("cam_b_entrance_video_new", "cam_back_entrance");
     });
 </script>
+
 
 
 
