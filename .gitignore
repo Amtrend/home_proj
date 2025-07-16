@@ -4,3 +4,5 @@ __pycache__/
 /config/.env
 *.pyc
 /db/
+/config/mediamtx/mediamtx.yml
+/config/coturn/coturn.conf
