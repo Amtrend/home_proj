@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http.response import StreamingHttpResponse, JsonResponse, FileResponse
+from django.http.response import StreamingHttpResponse, JsonResponse, FileResponse, HttpResponse
 from .models import *
 from .services import open_file
 from django.contrib.auth import authenticate, login
@@ -158,3 +158,9 @@ def sensors_resp_page(request):
                         cur_dt = dt.now().strftime("%H:%M:%S %d.%m.%Y")
                         go_alarm_entrance_task.delay(targ_timesamp=cur_dt)
     return JsonResponse({'answer': 'ok'}, status=200)
+
+@login_required
+def auth_check_webrtc(request):
+    if request.user.is_authenticated:
+        return HttpResponse("OK", status=200)
+    return HttpResponse("Unauthorized", status=401)
