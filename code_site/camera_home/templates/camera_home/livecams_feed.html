@@ -31,81 +31,69 @@
     </section>
     {% if request.user.is_superuser %}
         <script>
-            const iceServers = [
-                { urls: "stun:home.amtrend.ru:3478" },
-                {
-                    urls: "turn:home.amtrend.ru:3478",
-                    username: "webrtcuser",
-                    credential: "webrtcpass"
-                }
-            ];
+    const iceServers = [
+        { urls: "stun:home.amtrend.ru:3478" },
+        {
+            urls: "turn:home.amtrend.ru:3478",
+            username: "webrtcuser",
+            credential: "webrtcpass"
+        }
+    ];
 
-            async function startWebRTC(videoElemId, cameraPath) {
-                const video = document.getElementById(videoElemId);
-                if (!video) {
-                    console.error("Video element not found:", videoElemId);
-                    return;
-                }
+    // Функция запуска WebRTC соединения
+    async function startWebRTC(videoElemId, cameraPath) {
+        const video = document.getElementById(videoElemId);
+        if (!video) {
+            console.error(`[${cameraPath}] Video element not found`);
+            return;
+        }
 
-                const pc = new RTCPeerConnection({ iceServers });
+        const pc = new RTCPeerConnection({ iceServers });
 
-                pc.ontrack = event => {
-                    if (video.srcObject !== event.streams[0]) {
-                        video.srcObject = event.streams[0];
-                        video.play().catch(e => console.warn("Play error", e));
-                    }
-                };
+        pc.ontrack = (event) => {
+            if (video.srcObject !== event.streams[0]) {
+                console.log(`[${cameraPath}] Got remote stream`);
+                video.srcObject = event.streams[0];
+                video.play().catch(e => console.warn(`[${cameraPath}] Video play error:`, e));
+            }
+        };
 
-                try {
-                    const offer = await pc.createOffer();
-                    await pc.setLocalDescription(offer);
+        try {
+            const offer = await pc.createOffer();
+            await pc.setLocalDescription(offer);
+            console.log(`[${cameraPath}] Offer SDP:\n`, offer.sdp);
 
-                    // Ждём завершения ICE Gathering
-                    await new Promise(resolve => {
-                        if (pc.iceGatheringState === "complete") {
-                            resolve();
-                        } else {
-                            const checkState = () => {
-                                if (pc.iceGatheringState === "complete") {
-                                    pc.removeEventListener("icegatheringstatechange", checkState);
-                                    resolve();
-                                }
-                            };
-                            pc.addEventListener("icegatheringstatechange", checkState);
-                        }
-                    });
+            const response = await fetch(`/webrtc/${cameraPath}/whep`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/sdp",
+                    "Accept": "application/sdp",
+                },
+                body: offer.sdp
+            });
 
-                    // Формируем URL для запроса
-                    const url = `${window.location.protocol}//${window.location.host}/webrtc/${cameraPath}/whep`;
-
-                    // Отправляем SDP на сервер
-                    const response = await fetch(url, {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/sdp",
-                            "Accept": "application/sdp",
-                        },
-                        body: pc.localDescription.sdp
-                    });
-
-                    if (!response.ok) {
-                        const text = await response.text();
-                        throw new Error(`WHEP server error: ${response.status} - ${text}`);
-                    }
-
-                    const answerSdp = await response.text();
-                    const answerDesc = new RTCSessionDescription({ type: "answer", sdp: answerSdp });
-                    await pc.setRemoteDescription(answerDesc);
-
-                } catch (err) {
-                    console.error(`WebRTC error for ${cameraPath}:`, err);
-                }
+            if (!response.ok) {
+                throw new Error(`WHEP server error: ${response.status}`);
             }
 
-            // Запуск всех камер
-            startWebRTC("cam_entrance_video_new", "cam_entrance");
-            startWebRTC("cam_b_entrance_video_new", "cam_back_entrance");
-        </script>
+            const answerSdp = await response.text();
+            console.log(`[${cameraPath}] Answer SDP:\n`, answerSdp);
+
+            const answerDesc = new RTCSessionDescription({ type: "answer", sdp: answerSdp });
+            await pc.setRemoteDescription(answerDesc);
+
+        } catch (err) {
+            console.error(`WebRTC error for ${cameraPath}:`, err);
+        }
+    }
+
+    // Запуск камер
+    document.addEventListener("DOMContentLoaded", () => {
+        startWebRTC("cam_entrance_video_new", "cam_entrance");
+        startWebRTC("cam_b_entrance_video_new", "cam_back_entrance");
+    });
+</script>
+
 
 
 
