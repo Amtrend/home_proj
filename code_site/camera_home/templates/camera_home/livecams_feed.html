@@ -15,8 +15,8 @@
             </div>
         </div>
         {% if request.user.is_superuser %}
-            <script src="{% static 'js/adapter.js' %}"></script>
-            <script src="{% static 'js/janus.js' %}"></script>
+            {#            <script src="{% static 'js/adapter.js' %}"></script>#}
+            {#            <script src="{% static 'js/janus.js' %}"></script>#}
             <div class="livecam_page">
                 <div class="livecam_page-block">
                     <p class="title_livecam">Камера на входной группе</p>
@@ -31,69 +31,129 @@
     </section>
     {% if request.user.is_superuser %}
         <script>
-            Janus.init({
-                debug: "all",
-                callback: function() {
-                    const protocol = (window.location.protocol === "https:") ? "wss" : "ws";
-                    const hostname = window.location.hostname;
-                    const port = window.location.port ? `:${window.location.port}` : '';
-                    const janusWsUrl = `${protocol}://${hostname}${port}/janus`; // ws://localhost:8188/
-                    var janus = new Janus({
-                        server: janusWsUrl,
-                        success: function() {
-                            // Connect to camera with id
-                            function attachToStream(id, videoElementId) {
-                                janus.attach({
-                                    plugin: "janus.plugin.streaming",
-                                    success: function(pluginHandle) {
-                                        pluginHandle.send({ message: { request: "watch", id: id } });
 
-                                        // When get msg from janus
-                                        pluginHandle.onmessage = function(msg, jsep) {
-                                            if(jsep) {
-                                                pluginHandle.createAnswer({
-                                                    jsep: jsep,
-                                                    media: { audioSend: false, videoSend: false },
-                                                    success: function(jsepAnswer) {
-                                                        pluginHandle.send({ message: { request: "start" }, jsep: jsepAnswer });
-                                                    },
-                                                    error: function(error) {
-                                                        console.error("Error when create response:", error);
-                                                    }
-                                                });
-                                            }
-                                        };
-
-                                        // When get video of track
-                                        pluginHandle.onremotetrack = function(track, mid, on) {
-                                            if(on && track.kind === "video") {
-                                                const stream = new MediaStream();
-                                                stream.addTrack(track);
-                                                const video = document.getElementById(videoElementId);
-                                                video.srcObject = stream;
-                                                //video.play();
-                                                video.addEventListener("canplay", () => {
-                                                    video.play().catch((e) => {
-                                                        console.warn("Playback error:", e);
-                                                    });
-                                                }, { once: true });
-                                            }
-                                        };
-                                    },
-                                    error: function(error) {
-                                        console.error("Error connect to plugin:", error);
-                                    }
-                                });
-                            }
-
-                            // Add cameras
-                            attachToStream(1, "cam_entrance_video_new");
-                            attachToStream(2, "cam_b_entrance_video_new");
-                        }
-                    });
+            const iceServers = [
+                { urls: "stun:home.amtrend.ru:3478" },
+                {
+                    urls: "turn:home.amtrend.ru:3478",
+                    username: "webrtcuser",
+                    credential: "webrtcpass"
                 }
-            });
+            ];
+
+            // Функция запуска WebRTC для конкретного video и пути к камере
+            async function startWebRTC(videoElemId, cameraPath) {
+                const video = document.getElementById(videoElemId);
+                if (!video) {
+                    console.error("Video element not found:", videoElemId);
+                    return;
+                }
+
+                // Создаем RTCPeerConnection
+                const pc = new RTCPeerConnection({ iceServers });
+
+                // Обработка входящих треков
+                pc.ontrack = event => {
+                    // Первый трек и есть поток
+                    if (video.srcObject !== event.streams[0]) {
+                        video.srcObject = event.streams[0];
+                        video.play().catch(e => console.warn("Play error", e));
+                    }
+                };
+
+                // Запрос SDP Offer у сервера MediaMTX (WHEP)
+                const url = `${window.location.protocol}//${window.location.host}/${cameraPath}/whep`;
+
+                // Создаем SDP Offer
+                const offer = await pc.createOffer();
+                await pc.setLocalDescription(offer);
+
+                // Отправляем offer на сервер и получаем answer
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/sdp",
+                        "Accept": "application/sdp",
+                    },
+                    body: offer.sdp
+                });
+
+                const answerSdp = await response.text();
+
+                // Устанавливаем ответ в RTCPeerConnection
+                const answerDesc = new RTCSessionDescription({ type: "answer", sdp: answerSdp });
+                await pc.setRemoteDescription(answerDesc);
+            }
+
+            // Запускаем обе камеры
+            startWebRTC("cam_entrance_video_new", "cam_entrance");
+            startWebRTC("cam_b_entrance_video_new", "cam_back_entrance");
+
         </script>
+        {#        <script>#}
+        {#            Janus.init({#}
+        {#                debug: "all",#}
+        {#                callback: function() {#}
+        {#                    const protocol = (window.location.protocol === "https:") ? "wss" : "ws";#}
+        {#                    const hostname = window.location.hostname;#}
+        {#                    const port = window.location.port ? `:${window.location.port}` : '';#}
+        {#                    const janusWsUrl = `${protocol}://${hostname}${port}/janus`; // ws://localhost:8188/#}
+        {#                    var janus = new Janus({#}
+        {#                        server: janusWsUrl,#}
+        {#                        success: function() {#}
+        {#                            // Connect to camera with id#}
+        {#                            function attachToStream(id, videoElementId) {#}
+        {#                                janus.attach({#}
+        {#                                    plugin: "janus.plugin.streaming",#}
+        {#                                    success: function(pluginHandle) {#}
+        {#                                        pluginHandle.send({ message: { request: "watch", id: id } });#}
+        {##}
+        {#                                        // When get msg from janus#}
+        {#                                        pluginHandle.onmessage = function(msg, jsep) {#}
+        {#                                            if(jsep) {#}
+        {#                                                pluginHandle.createAnswer({#}
+        {#                                                    jsep: jsep,#}
+        {#                                                    media: { audioSend: false, videoSend: false },#}
+        {#                                                    success: function(jsepAnswer) {#}
+        {#                                                        pluginHandle.send({ message: { request: "start" }, jsep: jsepAnswer });#}
+        {#                                                    },#}
+        {#                                                    error: function(error) {#}
+        {#                                                        console.error("Error when create response:", error);#}
+        {#                                                    }#}
+        {#                                                });#}
+        {#                                            }#}
+        {#                                        };#}
+        {##}
+        {#                                        // When get video of track#}
+        {#                                        pluginHandle.onremotetrack = function(track, mid, on) {#}
+        {#                                            if(on && track.kind === "video") {#}
+        {#                                                const stream = new MediaStream();#}
+        {#                                                stream.addTrack(track);#}
+        {#                                                const video = document.getElementById(videoElementId);#}
+        {#                                                video.srcObject = stream;#}
+        {#                                                //video.play();#}
+        {#                                                video.addEventListener("canplay", () => {#}
+        {#                                                    video.play().catch((e) => {#}
+        {#                                                        console.warn("Playback error:", e);#}
+        {#                                                    });#}
+        {#                                                }, { once: true });#}
+        {#                                            }#}
+        {#                                        };#}
+        {#                                    },#}
+        {#                                    error: function(error) {#}
+        {#                                        console.error("Error connect to plugin:", error);#}
+        {#                                    }#}
+        {#                                });#}
+        {#                            }#}
+        {##}
+        {#                            // Add cameras#}
+        {#                            attachToStream(1, "cam_entrance_video_new");#}
+        {#                            attachToStream(2, "cam_b_entrance_video_new");#}
+        {#                        }#}
+        {#                    });#}
+        {#                }#}
+        {#            });#}
+        {#        </script>#}
     {% endif %}
 
 {% endblock %}
