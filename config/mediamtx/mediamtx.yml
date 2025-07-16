@@ -11,9 +11,5 @@ webrtcICEServers2:
 paths:
   cam_entrance:
     source: rtsp://admin:admin@192.168.0.20/live
-    reconnect: true
-    reconnectInterval: 10
   cam_back_entrance:
     source: rtsp://admin:admin@192.168.0.19/live
-    reconnect: true
-    reconnectInterval: 10
