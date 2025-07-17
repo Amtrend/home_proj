@@ -159,7 +159,6 @@ def sensors_resp_page(request):
                         go_alarm_entrance_task.delay(targ_timesamp=cur_dt)
     return JsonResponse({'answer': 'ok'}, status=200)
 
-@csrf_exempt
 def auth_check_webrtc(request):
     if request.user.is_authenticated:
         return HttpResponse("OK", status=200)

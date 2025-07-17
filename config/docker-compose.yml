@@ -172,11 +172,6 @@ services:
     image: bluenviron/mediamtx:1.13.0
     container_name: mediamtx
     restart: unless-stopped
-#    ports:
-#      - "8554:8554"   # RTSP
-#      - "8888:8888"   # HLS
-#      - "8889:8889"   # WebRTC HTTP
-#      - "8189:8189/udp" # WebRTC ICE
     volumes:
       - ./mediamtx/mediamtx.yml:/mediamtx.yml
     command: ["/mediamtx.yml"]
@@ -193,8 +188,8 @@ services:
       - "3478:3478/tcp"
     command: ["turnserver", "--fingerprint", "--listening-ip=0.0.0.0",
               "--listening-port=3478", "--external-ip=${EXTERNALIP}",
-              "--realm=${SERVICEDOMAIN}", "--lt-cred-mech", "--user=${RTCUSER}:${RTCPASS}",
-              "--log-file=stdout"]
+              "--realm=${SERVICEDOMAIN}", "--lt-cred-mech",
+              "--user=${RTCUSER}:${RTCPASS}", "--log-file=stdout"]
     networks:
       - home_default
 networks:
