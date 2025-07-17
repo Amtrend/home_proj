@@ -2,102 +2,73 @@
 {% load static %}
 {% block title %}Онлайн трансляция{% endblock %}
 {% block content %}
-    <script src="{% static 'js/hls.light.min.js' %}"></script>
+    {#    <script src="{% static 'js/hls.light.min.js' %}"></script>#}
     <section id="livecam_page">
         <div class="livecam_page">
             <div class="livecam_page-block">
                 <p class="title_livecam">Камера на входной группе</p>
-                <video id="cam_entrance_video" class="livecam_video_block-video" muted playsinline controls preload="none"></video>
+                <video id="cam_entrance_video" class="livecam_video_block-video" muted playsinline controls></video>
             </div>
             <div class="livecam_page-block">
                 <p class="title_livecam">Камера на входной группе заднего двора</p>
-                <video id="cam_b_entrance_video" class="livecam_video_block-video" muted playsinline controls preload="none"></video>
+                <video id="cam_b_entrance_video" class="livecam_video_block-video" muted playsinline controls></video>
             </div>
         </div>
-        {% if request.user.is_superuser %}
-            <div class="livecam_page">
-                <div class="livecam_page-block">
-                    <p class="title_livecam">Камера на входной группе</p>
-                    <video id="cam_entrance_video_new" class="livecam_video_block-video" muted playsinline controls preload="none"></video>
-                </div>
-                <div class="livecam_page-block">
-                    <p class="title_livecam">Камера на входной группе заднего двора</p>
-                    <video id="cam_b_entrance_video_new" class="livecam_video_block-video" muted playsinline controls preload="none"></video>
-                </div>
-            </div>
-        {% endif %}
     </section>
-    {% if request.user.is_superuser %}
-        <script>
-            {#const iceServers = [#}
-            {#    { urls: "stun:home.amtrend.ru:3478" },#}
-            {#    {#}
-            {#        urls: "turn:home.amtrend.ru:3478",#}
-            {#        username: "webrtcuser",#}
-            {#        credential: "webrtcpass"#}
-            {#    }#}
-            {#];#}
-
-            async function startWebRTC(videoElemId, cameraPath) {
-                const video = document.getElementById(videoElemId);
-                if (!video) {
-                    console.error(`[${cameraPath}] Video element not found`);
-                    return;
-                }
-
-                const webrtcConfResponse = await fetch('/get_webrtc_config/');
-                if (!webrtcConfResponse.ok) {
-                    console.error('Failed to fetch WebRTC config');
-                    return;
-                }
-                const webrtcConf = await webrtcConfResponse.json();
-
-                {#const pc = new RTCPeerConnection({ iceServers });#}
-                const pc = new RTCPeerConnection(webrtcConf);
-
-                pc.addTransceiver('video', { direction: 'recvonly' });
-                pc.ontrack = event => {
-                    if (video.srcObject !== event.streams[0]) {
-                        {#console.log(`[${cameraPath}] Got remote stream`);#}
-                        video.srcObject = event.streams[0];
-                        video.play().catch(e => console.warn(`[${cameraPath}] Video play error:`, e));
-                    }
-                };
-
-                try {
-                    const offer = await pc.createOffer();
-                    await pc.setLocalDescription(offer);
-                    {#console.log(`[${cameraPath}] Offer SDP:\n`, offer.sdp);#}
-                    const response = await fetch(`/webrtc/${cameraPath}/whep`, {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/sdp",
-                            "Accept": "application/sdp",
-                        },
-                        body: offer.sdp
-                    });
-
-                    if (!response.ok) {
-                        const text = await response.text();
-                        throw new Error(`HTTP error! status: ${response.status}, body: ${text}`);
-                    }
-
-                    const answerSdp = await response.text();
-                    {#console.log(`[${cameraPath}] Answer SDP:\n`, answerSdp);#}
-
-                    const answerDesc = new RTCSessionDescription({ type: "answer", sdp: answerSdp });
-                    await pc.setRemoteDescription(answerDesc);
-
-                } catch (err) {
-                    console.error(`WebRTC error for ${cameraPath}:`, err);
-                }
+    <script>
+        async function startWebRTC(videoElemId, cameraPath) {
+            const video = document.getElementById(videoElemId);
+            if (!video) {
+                console.error(`[${cameraPath}] Video element not found`);
+                return;
             }
 
-            document.addEventListener("DOMContentLoaded", () => {
-                startWebRTC("cam_entrance_video_new", "cam_entrance");
-                startWebRTC("cam_b_entrance_video_new", "cam_back_entrance");
-            });
-        </script>
-    {% endif %}
+            const webrtcConfResponse = await fetch('/get_webrtc_config/');
+            if (!webrtcConfResponse.ok) {
+                console.error('Failed to fetch WebRTC config');
+                return;
+            }
+            const webrtcConf = await webrtcConfResponse.json();
+            const pc = new RTCPeerConnection(webrtcConf);
+
+            pc.addTransceiver('video', { direction: 'recvonly' });
+            pc.ontrack = event => {
+                if (video.srcObject !== event.streams[0]) {
+                    video.srcObject = event.streams[0];
+                    {#video.play().catch(e => console.warn(`[${cameraPath}] Video play error:`, e));#}
+                }
+            };
+
+            try {
+                const offer = await pc.createOffer();
+                await pc.setLocalDescription(offer);
+                const response = await fetch(`/webrtc/${cameraPath}/whep`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/sdp",
+                        "Accept": "application/sdp",
+                    },
+                    body: offer.sdp
+                });
+
+                if (!response.ok) {
+                    const text = await response.text();
+                    throw new Error(`HTTP error! status: ${response.status}, body: ${text}`);
+                }
+
+                const answerSdp = await response.text();
+                const answerDesc = new RTCSessionDescription({ type: "answer", sdp: answerSdp });
+                await pc.setRemoteDescription(answerDesc);
+
+            } catch (err) {
+                console.error(`WebRTC error for ${cameraPath}:`, err);
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            startWebRTC("cam_entrance_video", "cam_entrance");
+            startWebRTC("cam_b_entrance_video", "cam_back_entrance");
+        });
+    </script>
 
 {% endblock %}
