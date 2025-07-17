@@ -196,12 +196,15 @@ def show_archive_video(request, cam, pk):
     if not _video or not _video.video:
         raise Http404()
 
-    file_path = Path(_video.video.path)
-    if not file_path.exists():
+    file_path = Path(_video.video.path).resolve()
+    media_root = file_path.relative_to(MEDIA_ROOT).resolve()
+
+    try:
+        relative_path = file_path.relative_to(media_root)
+    except ValueError:
         raise Http404()
 
-    relative_path = file_path.relative_to(MEDIA_ROOT)
     response = HttpResponse()
     response['Content-Type'] = 'video/mp4'
-    response['X-Accel-Redirect'] = f'/protected_media/{relative_path}'
+    response['X-Accel-Redirect'] = f'/protected_media/{relative_path.as_posix()}'
     return response
