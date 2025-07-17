@@ -201,8 +201,10 @@ def show_archive_video(request, cam, pk):
         media_root = file_path.relative_to(MEDIA_ROOT).resolve()
         print("DEBUG - file_path:", file_path)
         print("DEBUG - media_root:", media_root)
+        print(f"[DEBUG] MEDIA_ROOT = {MEDIA_ROOT}")
         relative_path = file_path.relative_to(media_root)
         print("DEBUG - relative_path:", relative_path)
+        print(f"[DEBUG] Is file path inside MEDIA_ROOT? {Path(_video.video.path).resolve().is_relative_to(Path(settings.MEDIA_ROOT).resolve())}")
     except Exception as e:
         print("ERROR - Path resolution failed:", e)
         raise Http404("Invalid path or not under MEDIA_ROOT")
