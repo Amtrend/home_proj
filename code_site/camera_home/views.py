@@ -185,11 +185,11 @@ def get_webrtc_config(request):
     })
 
 @login_required
-def show_archive_video(request, cam, video_pk):
+def show_archive_video(request, cam, pk):
     if cam == 'entry':
-        _video = get_object_or_404(CameraEntranceSaveVideos, pk=video_pk)
+        _video = get_object_or_404(CameraEntranceSaveVideos, pk=pk)
     elif cam == 'b_entry':
-        _video = get_object_or_404(CameraBEntranceSaveVideos, pk=video_pk)
+        _video = get_object_or_404(CameraBEntranceSaveVideos, pk=pk)
     else:
         raise Http404()
 
@@ -199,8 +199,6 @@ def show_archive_video(request, cam, video_pk):
     file_path = Path(_video.video.path)
     if not file_path.exists():
         raise Http404()
-
-    relative_path = file_path.relative_to(settings.MEDIA_ROOT)
 
     response = HttpResponse()
     response['Content-Type'] = 'video/mp4'
