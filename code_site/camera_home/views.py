@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from datetime import datetime as dt
 from django.views.decorators.csrf import csrf_exempt
 import os
-from django.conf.settings import STUN_DOMAIN, RTCUSER, RTCPASS
+from smart_home.settings import STUN_DOMAIN, RTCUSER, RTCPASS
 
 
 @login_required
