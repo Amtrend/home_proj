@@ -192,9 +192,10 @@ services:
       - "3478:3478/udp"
       - "3478:3478/tcp"
       - "49160-49200:49160-49200/udp"
-    volumes:
-      - ./coturn/coturn.conf:/etc/turnserver.conf
-    command: ["turnserver", "-v", "-c", "/etc/turnserver.conf"]
+#    volumes:
+#      - ./coturn/coturn.conf:/etc/turnserver.conf
+#    command: ["turnserver", "-v", "-c", "/etc/turnserver.conf"]
+    command: ["turnserver", "-v", "--fingerprint", "--listening-ip=0.0.0.0", "--listening-port=3478", "--min-port=49160", "--max-port=49200", "--external-ip=${EXTERNALIP}", "--realm=example.org", "--lt-cred-mech", "--user=${RTCUSER}:${RTCPASS}"]
     networks:
       - home_default
 networks:
