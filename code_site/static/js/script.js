@@ -131,53 +131,54 @@ ready(() => {
         }
     }
 
-    let videoCamEntrance = document.getElementById('cam_entrance_video');
-    if (videoCamEntrance) {
-        let pathToStream = window.location.origin + '/media/stream/cam_entrance/streaming.m3u8';
-        if(Hls.isSupported()) {
-            let hls = new Hls();
-            hls.on(Hls.Events.Error, function (event, data) {
-                console.log("HLS error: ", event, data);
-            });
-            hls.attachMedia(videoCamEntrance);
-            hls.on(Hls.Events.MEDIA_ATTACHED, function() {
-                hls.loadSource(pathToStream);
-                hls.on(Hls.Events.MANIFEST_PARSED,function() {
-                    videoCamEntrance.play();
-                });
-            });
-        }
-        else if (videoCamEntrance.canPlayType('application/vnd.apple.mpegurl')) {
-            videoCamEntrance.src = pathToStream;
-            videoCamEntrance.addEventListener('loadedmetadata',function() {
-                videoCamEntrance.play();
-            });
-        }
-    }
-
-    let videoCamBEntrance = document.getElementById('cam_b_entrance_video');
-    if (videoCamBEntrance) {
-        let pathToStream = window.location.origin + '/media/stream/cam_b_entrance/streaming.m3u8';
-        if(Hls.isSupported()) {
-            let hls = new Hls();
-            hls.on(Hls.Events.Error, function (event, data) {
-                console.log("HLS error: ", event, data);
-            });
-            hls.attachMedia(videoCamBEntrance);
-            hls.on(Hls.Events.MEDIA_ATTACHED, function() {
-                hls.loadSource(pathToStream);
-                hls.on(Hls.Events.MANIFEST_PARSED,function() {
-                    videoCamBEntrance.play();
-                });
-            });
-        }
-        else if (videoCamBEntrance.canPlayType('application/vnd.apple.mpegurl')) {
-            videoCamBEntrance.src = pathToStream;
-            videoCamBEntrance.addEventListener('loadedmetadata',function() {
-                videoCamBEntrance.play();
-            });
-        }
-    }
+    // // For hls video translation
+    // let videoCamEntrance = document.getElementById('cam_entrance_video');
+    // if (videoCamEntrance) {
+    //     let pathToStream = window.location.origin + '/media/stream/cam_entrance/streaming.m3u8';
+    //     if(Hls.isSupported()) {
+    //         let hls = new Hls();
+    //         hls.on(Hls.Events.Error, function (event, data) {
+    //             console.log("HLS error: ", event, data);
+    //         });
+    //         hls.attachMedia(videoCamEntrance);
+    //         hls.on(Hls.Events.MEDIA_ATTACHED, function() {
+    //             hls.loadSource(pathToStream);
+    //             hls.on(Hls.Events.MANIFEST_PARSED,function() {
+    //                 videoCamEntrance.play();
+    //             });
+    //         });
+    //     }
+    //     else if (videoCamEntrance.canPlayType('application/vnd.apple.mpegurl')) {
+    //         videoCamEntrance.src = pathToStream;
+    //         videoCamEntrance.addEventListener('loadedmetadata',function() {
+    //             videoCamEntrance.play();
+    //         });
+    //     }
+    // }
+    //
+    // let videoCamBEntrance = document.getElementById('cam_b_entrance_video');
+    // if (videoCamBEntrance) {
+    //     let pathToStream = window.location.origin + '/media/stream/cam_b_entrance/streaming.m3u8';
+    //     if(Hls.isSupported()) {
+    //         let hls = new Hls();
+    //         hls.on(Hls.Events.Error, function (event, data) {
+    //             console.log("HLS error: ", event, data);
+    //         });
+    //         hls.attachMedia(videoCamBEntrance);
+    //         hls.on(Hls.Events.MEDIA_ATTACHED, function() {
+    //             hls.loadSource(pathToStream);
+    //             hls.on(Hls.Events.MANIFEST_PARSED,function() {
+    //                 videoCamBEntrance.play();
+    //             });
+    //         });
+    //     }
+    //     else if (videoCamBEntrance.canPlayType('application/vnd.apple.mpegurl')) {
+    //         videoCamBEntrance.src = pathToStream;
+    //         videoCamBEntrance.addEventListener('loadedmetadata',function() {
+    //             videoCamBEntrance.play();
+    //         });
+    //     }
+    // }
 
 
 });

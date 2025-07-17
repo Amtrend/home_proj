@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from datetime import datetime as dt
 from django.views.decorators.csrf import csrf_exempt
 import os
+from django.conf.settings import STUN_DOMAIN, RTCUSER, RTCPASS
 
 
 @login_required
@@ -163,3 +164,16 @@ def auth_check_webrtc(request):
     if request.user.is_authenticated:
         return HttpResponse("OK", status=200)
     return HttpResponse("Unauthorized", status=401)
+
+@login_required
+def get_webrtc_config(request):
+    return JsonResponse({
+        "iceServers": [
+            {"urls": f"stun:{STUN_DOMAIN}:3478"},
+            {
+                "urls": f"turn:{STUN_DOMAIN}:3478",
+                "username": RTCUSER,
+                "credential": RTCPASS
+            }
+        ]
+    })

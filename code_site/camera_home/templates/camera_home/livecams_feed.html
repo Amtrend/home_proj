@@ -15,8 +15,6 @@
             </div>
         </div>
         {% if request.user.is_superuser %}
-            {#            <script src="{% static 'js/adapter.js' %}"></script>#}
-            {#            <script src="{% static 'js/janus.js' %}"></script>#}
             <div class="livecam_page">
                 <div class="livecam_page-block">
                     <p class="title_livecam">Камера на входной группе</p>
@@ -30,18 +28,15 @@
         {% endif %}
     </section>
     {% if request.user.is_superuser %}
-
-
-
         <script>
-            const iceServers = [
-                { urls: "stun:home.amtrend.ru:3478" },
-                {
-                    urls: "turn:home.amtrend.ru:3478",
-                    username: "webrtcuser",
-                    credential: "webrtcpass"
-                }
-            ];
+            {#const iceServers = [#}
+            {#    { urls: "stun:home.amtrend.ru:3478" },#}
+            {#    {#}
+            {#        urls: "turn:home.amtrend.ru:3478",#}
+            {#        username: "webrtcuser",#}
+            {#        credential: "webrtcpass"#}
+            {#    }#}
+            {#];#}
 
             async function startWebRTC(videoElemId, cameraPath) {
                 const video = document.getElementById(videoElemId);
@@ -50,14 +45,20 @@
                     return;
                 }
 
-                const pc = new RTCPeerConnection({ iceServers });
+                const webrtcConfResponse = await fetch('/get_webrtc_config/');
+                if (!webrtcConfResponse.ok) {
+                    console.error('Failed to fetch WebRTC config');
+                    return;
+                }
+                const webrtcConf = await webrtcConfResponse.json();
 
-                // 🔥 ВАЖНО: запрашиваем получение видео
+                {#const pc = new RTCPeerConnection({ iceServers });#}
+                const pc = new RTCPeerConnection(webrtcConf);
+
                 pc.addTransceiver('video', { direction: 'recvonly' });
-
                 pc.ontrack = event => {
                     if (video.srcObject !== event.streams[0]) {
-                        console.log(`[${cameraPath}] Got remote stream`);
+                        {#console.log(`[${cameraPath}] Got remote stream`);#}
                         video.srcObject = event.streams[0];
                         video.play().catch(e => console.warn(`[${cameraPath}] Video play error:`, e));
                     }
@@ -66,8 +67,7 @@
                 try {
                     const offer = await pc.createOffer();
                     await pc.setLocalDescription(offer);
-                    console.log(`[${cameraPath}] Offer SDP:\n`, offer.sdp);
-
+                    {#console.log(`[${cameraPath}] Offer SDP:\n`, offer.sdp);#}
                     const response = await fetch(`/webrtc/${cameraPath}/whep`, {
                         method: "POST",
                         headers: {
@@ -83,7 +83,7 @@
                     }
 
                     const answerSdp = await response.text();
-                    console.log(`[${cameraPath}] Answer SDP:\n`, answerSdp);
+                    {#console.log(`[${cameraPath}] Answer SDP:\n`, answerSdp);#}
 
                     const answerDesc = new RTCSessionDescription({ type: "answer", sdp: answerSdp });
                     await pc.setRemoteDescription(answerDesc);
@@ -98,75 +98,6 @@
                 startWebRTC("cam_b_entrance_video_new", "cam_back_entrance");
             });
         </script>
-
-
-
-
-
-        {#        <script>#}
-        {#            Janus.init({#}
-        {#                debug: "all",#}
-        {#                callback: function() {#}
-        {#                    const protocol = (window.location.protocol === "https:") ? "wss" : "ws";#}
-        {#                    const hostname = window.location.hostname;#}
-        {#                    const port = window.location.port ? `:${window.location.port}` : '';#}
-        {#                    const janusWsUrl = `${protocol}://${hostname}${port}/janus`; // ws://localhost:8188/#}
-        {#                    var janus = new Janus({#}
-        {#                        server: janusWsUrl,#}
-        {#                        success: function() {#}
-        {#                            // Connect to camera with id#}
-        {#                            function attachToStream(id, videoElementId) {#}
-        {#                                janus.attach({#}
-        {#                                    plugin: "janus.plugin.streaming",#}
-        {#                                    success: function(pluginHandle) {#}
-        {#                                        pluginHandle.send({ message: { request: "watch", id: id } });#}
-        {##}
-        {#                                        // When get msg from janus#}
-        {#                                        pluginHandle.onmessage = function(msg, jsep) {#}
-        {#                                            if(jsep) {#}
-        {#                                                pluginHandle.createAnswer({#}
-        {#                                                    jsep: jsep,#}
-        {#                                                    media: { audioSend: false, videoSend: false },#}
-        {#                                                    success: function(jsepAnswer) {#}
-        {#                                                        pluginHandle.send({ message: { request: "start" }, jsep: jsepAnswer });#}
-        {#                                                    },#}
-        {#                                                    error: function(error) {#}
-        {#                                                        console.error("Error when create response:", error);#}
-        {#                                                    }#}
-        {#                                                });#}
-        {#                                            }#}
-        {#                                        };#}
-        {##}
-        {#                                        // When get video of track#}
-        {#                                        pluginHandle.onremotetrack = function(track, mid, on) {#}
-        {#                                            if(on && track.kind === "video") {#}
-        {#                                                const stream = new MediaStream();#}
-        {#                                                stream.addTrack(track);#}
-        {#                                                const video = document.getElementById(videoElementId);#}
-        {#                                                video.srcObject = stream;#}
-        {#                                                //video.play();#}
-        {#                                                video.addEventListener("canplay", () => {#}
-        {#                                                    video.play().catch((e) => {#}
-        {#                                                        console.warn("Playback error:", e);#}
-        {#                                                    });#}
-        {#                                                }, { once: true });#}
-        {#                                            }#}
-        {#                                        };#}
-        {#                                    },#}
-        {#                                    error: function(error) {#}
-        {#                                        console.error("Error connect to plugin:", error);#}
-        {#                                    }#}
-        {#                                });#}
-        {#                            }#}
-        {##}
-        {#                            // Add cameras#}
-        {#                            attachToStream(1, "cam_entrance_video_new");#}
-        {#                            attachToStream(2, "cam_b_entrance_video_new");#}
-        {#                        }#}
-        {#                    });#}
-        {#                }#}
-        {#            });#}
-        {#        </script>#}
     {% endif %}
 
 {% endblock %}

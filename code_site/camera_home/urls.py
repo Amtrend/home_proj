@@ -16,5 +16,6 @@ urlpatterns = [
     path('download/<str:cam>/<int:pk>/', download_video, name='download_video'),
     path('sensors/', sensors_resp_page, name='sensors_resp'),
     path('auth_check_webrtc/', auth_check_webrtc, name='auth_check_webrtc'),
+    path('get_webrtc_config/', get_webrtc_config, name='get_webrtc_config'),
     path('robots.txt', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
 ]
