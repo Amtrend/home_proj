@@ -199,13 +199,9 @@ def show_archive_video(request, cam, pk):
     try:
         file_path = Path(_video.video.path).resolve()
         media_root = Path(MEDIA_ROOT).resolve()
-        print("DEBUG - file_path:", file_path)
-        print("DEBUG - media_root:", media_root)
         relative_path = file_path.relative_to(media_root)
-        print("DEBUG - relative_path:", relative_path)
     except Exception as e:
-        print("ERROR - Path resolution failed:", e)
-        raise Http404("Invalid path or not under MEDIA_ROOT")
+        raise Http404()
 
     response = HttpResponse()
     response['Content-Type'] = 'video/mp4'
