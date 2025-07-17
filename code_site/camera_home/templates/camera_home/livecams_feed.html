@@ -35,6 +35,7 @@
             pc.ontrack = event => {
                 if (video.srcObject !== event.streams[0]) {
                     video.srcObject = event.streams[0];
+                    // autoplay stream video
                     {#video.play().catch(e => console.warn(`[${cameraPath}] Video play error:`, e));#}
                 }
             };

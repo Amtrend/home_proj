@@ -15,21 +15,21 @@ services:
       - home_default
     env_file:
       - .env
-  csapp:
-    restart: unless-stopped
-    container_name: csapp
-    build:
-      context: .
-      dockerfile: dockerfiles/docker_csa.conf
-    command: python ./main.py
-    volumes:
-      - ../code_stream_video_app:/code_app
-      - ../media/stream/cam_entrance:/code_app/media_files
-      - ../logs/csapp:/code_app/logs
-    networks:
-      - home_default
-    env_file:
-      - .env
+#  csapp:
+#    restart: unless-stopped
+#    container_name: csapp
+#    build:
+#      context: .
+#      dockerfile: dockerfiles/docker_csa.conf
+#    command: python ./main.py
+#    volumes:
+#      - ../code_stream_video_app:/code_app
+#      - ../media/stream/cam_entrance:/code_app/media_files
+#      - ../logs/csapp:/code_app/logs
+#    networks:
+#      - home_default
+#    env_file:
+#      - .env
   django:
     restart: unless-stopped
     container_name: django
@@ -138,21 +138,21 @@ services:
       - db
     env_file:
       - .env
-  csbeapp:
-    restart: unless-stopped
-    container_name: csbeapp
-    build:
-      context: .
-      dockerfile: dockerfiles/docker_csa.conf
-    command: python ./main.py
-    volumes:
-      - ../code_be_stream_video_app:/code_app
-      - ../media/stream/cam_b_entrance:/code_app/media_files
-      - ../logs/csbeapp:/code_app/logs
-    networks:
-      - home_default
-    env_file:
-      - .env
+#  csbeapp:
+#    restart: unless-stopped
+#    container_name: csbeapp
+#    build:
+#      context: .
+#      dockerfile: dockerfiles/docker_csa.conf
+#    command: python ./main.py
+#    volumes:
+#      - ../code_be_stream_video_app:/code_app
+#      - ../media/stream/cam_b_entrance:/code_app/media_files
+#      - ../logs/csbeapp:/code_app/logs
+#    networks:
+#      - home_default
+#    env_file:
+#      - .env
   svbeapp:
     restart: unless-stopped
     container_name: svbeapp

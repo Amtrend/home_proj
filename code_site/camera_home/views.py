@@ -1,14 +1,18 @@
-from django.shortcuts import render, get_object_or_404, redirect
-from django.http.response import StreamingHttpResponse, JsonResponse, FileResponse, HttpResponse
+import os
+
+from datetime import datetime as dt
+from pathlib import Path
+
+from .forms import *
 from .models import *
 from .services import open_file
-from django.contrib.auth import authenticate, login
-from .forms import *
 from .tasks import *
+
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
-from datetime import datetime as dt
+from django.shortcuts import render, get_object_or_404, redirect
+from django.http.response import StreamingHttpResponse, JsonResponse, FileResponse, HttpResponse, Http404
 from django.views.decorators.csrf import csrf_exempt
-import os
 from smart_home.settings import STUN_DOMAIN, RTCUSER, RTCPASS
 
 
@@ -160,10 +164,12 @@ def sensors_resp_page(request):
                         go_alarm_entrance_task.delay(targ_timesamp=cur_dt)
     return JsonResponse({'answer': 'ok'}, status=200)
 
+
 def auth_check_webrtc(request):
     if request.user.is_authenticated:
         return HttpResponse("OK", status=200)
     return HttpResponse("Unauthorized", status=401)
+
 
 @login_required
 def get_webrtc_config(request):
@@ -177,3 +183,24 @@ def get_webrtc_config(request):
             }
         ]
     })
+
+@login_required
+def show_archive_video(request, cam, video_pk):
+    if cam == 'entry':
+        _video = get_object_or_404(CameraEntranceSaveVideos, pk=video_pk)
+    elif cam == 'b_entry':
+        _video = get_object_or_404(CameraBEntranceSaveVideos, pk=video_pk)
+    else:
+        raise Http404()
+
+    if not _video or not _video.video:
+        raise Http404()
+
+    file_path = Path(_video.video.path)
+    if not file_path.exists():
+        raise Http404()
+
+    response = HttpResponse()
+    response['Content-Type'] = 'video/mp4'
+    response['X-Accel-Redirect'] = f'/protected_media/{file_path}'
+    return response
