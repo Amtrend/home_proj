@@ -202,5 +202,5 @@ def show_archive_video(request, cam, pk):
 
     response = HttpResponse()
     response['Content-Type'] = 'video/mp4'
-    response['X-Accel-Redirect'] = f'/protected_media/{relative_path}'
+    response['X-Accel-Redirect'] = f'/protected_media/{file_path}'
     return response
