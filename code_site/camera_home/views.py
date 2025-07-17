@@ -13,7 +13,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http.response import StreamingHttpResponse, JsonResponse, FileResponse, HttpResponse, Http404
 from django.views.decorators.csrf import csrf_exempt
-from smart_home.settings import STUN_DOMAIN, RTCUSER, RTCPASS
+from smart_home.settings import STUN_DOMAIN, RTCUSER, RTCPASS, MEDIA_ROOT
 
 
 @login_required
@@ -200,7 +200,9 @@ def show_archive_video(request, cam, video_pk):
     if not file_path.exists():
         raise Http404()
 
+    relative_path = file_path.relative_to(settings.MEDIA_ROOT)
+
     response = HttpResponse()
     response['Content-Type'] = 'video/mp4'
-    response['X-Accel-Redirect'] = f'/protected_media/{file_path}'
+    response['X-Accel-Redirect'] = f'/protected_media/{relative_path}'
     return response
