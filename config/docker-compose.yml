@@ -197,7 +197,7 @@ services:
 #    command: ["turnserver", "-v", "-c", "/etc/turnserver.conf"]
     command: ["turnserver", "-v", "--fingerprint", "--listening-ip=0.0.0.0",
               "--listening-port=3478", "--external-ip=${EXTERNALIP}",
-              "--lt-cred-mech", "--user=${RTCUSER}:${RTCPASS}",
+              "--realm=${SERVICEDOMAIN}", "--lt-cred-mech", "--user=${RTCUSER}:${RTCPASS}",
               "--log-file=stdout"]
     networks:
       - home_default
