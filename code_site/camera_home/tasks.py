@@ -7,6 +7,7 @@ from django.core.cache import cache
 from requests.auth import HTTPDigestAuth
 from smart_home.settings import RTSP_LINK, TG_BOT_API, TG_CHAT_ID, MAIN_CAMERA_PASS, MAIN_CAMERA_USER, MAIN_CAMERA_SNAPSHOT_LINK
 
+DEBOUNCE_SECONDS = 7
 PHOTO_FILENAME = 'ae_photo.jpeg'
 
 
@@ -42,13 +43,13 @@ def main_entrance_alarm_task(targ_timestamp):
     if cache.get(cache_key):
         return "Alarm skipped: debounce active"
 
-    cache.set(cache_key, True, timeout=5)
+    cache.set(cache_key, True, timeout=7)
 
     try:
         response = requests.get(
             url=MAIN_CAMERA_SNAPSHOT_LINK,
             auth=HTTPDigestAuth(MAIN_CAMERA_USER, MAIN_CAMERA_PASS),
-            timeout=5
+            timeout=DEBOUNCE_SECONDS
         )
         if response.status_code == 200:
             with open(PHOTO_FILENAME, 'wb') as f:
