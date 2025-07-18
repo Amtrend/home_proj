@@ -1,12 +1,13 @@
-from celery import shared_task
-import requests
 import os
+import requests
 import subprocess
 
+from celery import shared_task
+from django.core.cache import cache
+from requests.auth import HTTPDigestAuth
+from smart_home.settings import RTSP_LINK, TG_BOT_API, TG_CHAT_ID, MAIN_CAMERA_PASS, MAIN_CAMERA_USER, MAIN_CAMERA_SNAPSHOT_LINK
 
-TG_BOT_API = os.environ.get("TG_BOT_API")
-TG_CHAT_ID = os.environ.get("TG_CHAT_ID")
-RTSP_LINK = os.environ.get("RTSP_LINK")
+PHOTO_FILENAME = 'ae_photo.jpeg'
 
 
 def send_tg_msg_and_video(api_key, chat_id, text_msg, file):
@@ -33,6 +34,47 @@ def send_tg_msg_and_photo(api_key, chat_id, text_msg, file):
     }
     response = requests.post(f'https://api.telegram.org/bot{api_key}/sendPhoto', data=data_send, files=file_send)
     return response
+
+@shared_task(queue='for_alarm_entrance_task', name='alarm_entrance_task')
+def main_entrance_alarm_task(targ_timestamp):
+    cache_key = "motion_last_cam_entrance"
+
+    if cache.get(cache_key):
+        return "Alarm skipped: debounce active"
+
+    cache.set(cache_key, True, timeout=5)
+
+    try:
+        response = requests.get(
+            url=MAIN_CAMERA_SNAPSHOT_LINK,
+            auth=HTTPDigestAuth(MAIN_CAMERA_USER, MAIN_CAMERA_PASS),
+            timeout=5
+        )
+        if response.status_code == 200:
+            with open(PHOTO_FILENAME, 'wb') as f:
+                f.write(response.content)
+
+            try:
+                send_tg_msg_and_photo(
+                    api_key=TG_BOT_API,
+                    chat_id=TG_CHAT_ID,
+                    text_msg=f'Движение у <b>главного входа</b> в {targ_timestamp}',
+                    file=PHOTO_FILENAME
+                )
+            except Exception as e:
+                print(f'Ошибка при отправке фото: {e}')
+        else:
+            return "Ошибка при выполнении запроса к камере"
+
+    except Exception as e:
+        return f"Ошибка при получении снимка: {e}"
+    finally:
+        try:
+            if os.path.exists(PHOTO_FILENAME):
+                os.remove(PHOTO_FILENAME)
+        except Exception as e:
+            print(f'Ошибка при удалении файла: {e}')
+    return "Задача по сработке у главного входа выполнена"
 
 
 @shared_task(queue='for_alarm_entrance_task', name='alarm_entrance_task')

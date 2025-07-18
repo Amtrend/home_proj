@@ -161,7 +161,7 @@ def sensors_resp_page(request):
                 if cur_sens_set.ae_on:
                     if s_type == 'pir' and token == cur_sens_token:
                         cur_dt = dt.now().strftime("%H:%M:%S %d.%m.%Y")
-                        go_alarm_entrance_task.delay(targ_timesamp=cur_dt)
+                        main_entrance_alarm_task.delay(targ_timestamp=cur_dt)
     return JsonResponse({'answer': 'ok'}, status=200)
 
 
