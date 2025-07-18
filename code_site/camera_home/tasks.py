@@ -35,7 +35,7 @@ def send_tg_msg_and_photo(api_key, chat_id, text_msg, file):
     response = requests.post(f'https://api.telegram.org/bot{api_key}/sendPhoto', data=data_send, files=file_send)
     return response
 
-@shared_task(queue='for_alarm_entrance_task', name='alarm_entrance_task')
+@shared_task(queue='for_alarm_entrance_task', name='main_entrance_alarm_task')
 def main_entrance_alarm_task(targ_timestamp):
     cache_key = "motion_last_cam_entrance"
 
@@ -77,7 +77,7 @@ def main_entrance_alarm_task(targ_timestamp):
     return "Задача по сработке у главного входа выполнена"
 
 
-@shared_task(queue='for_alarm_entrance_task', name='alarm_entrance_task')
+@shared_task(queue='for_alarm_entrance_task', name='go_alarm_entrance_task')
 def go_alarm_entrance_task(targ_timesamp):
     try:
         filename = os.path.join(os.getcwd(), 'ae_photo.jpeg')
@@ -99,7 +99,7 @@ def go_alarm_entrance_task(targ_timesamp):
         return f"ошибка выполнения задачи по сработке у главного входа: {e}"
 
 
-@shared_task(queue='for_alarm_entrance_task', name='alarm_entrance_task')
+@shared_task(queue='for_alarm_entrance_task', name='go_alarm_entrance_task_video')
 def go_alarm_entrance_task_video(targ_timesamp):
     try:
         filename = os.path.join(os.getcwd(), 'ae_video.mp4')
