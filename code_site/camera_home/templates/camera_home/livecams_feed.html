@@ -8,35 +8,27 @@
             <div class="livecam_page-block">
                 <p class="title_livecam">Камера на входной группе</p>
                 <video id="cam_entrance_video" class="livecam_video_block-video" muted playsinline controls></video>
+
+                <div class="stream-status" id="status_cam_entrance">⏳ Подключение...</div>
+
             </div>
             <div class="livecam_page-block">
                 <p class="title_livecam">Камера на входной группе заднего двора</p>
                 <video id="cam_b_entrance_video" class="livecam_video_block-video" muted playsinline controls></video>
+
+                <div class="stream-status" id="status_cam_back_entrance">⏳ Подключение...</div>
+
             </div>
 
-            <div id="stream_status_overlay">
-                <div class="status-indicator" id="status_cam_entrance">⏳ Подключение...</div>
-                <div class="status-indicator" id="status_cam_back_entrance">⏳ Подключение...</div>
-            </div>
 
         </div>
     </section>
 
     <style>
-        #stream_status_overlay {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            z-index: 9999;
+        .stream-status {
             font-size: 14px;
-            background-color: rgba(0,0,0,0.6);
-            padding: 8px 12px;
-            border-radius: 10px;
-            color: white;
-            box-shadow: 0 0 10px rgba(0,0,0,0.3);
-        }
-        .status-indicator {
-            margin-bottom: 4px;
+            margin-top: 4px;
+            color: #555;
         }
     </style>
 
@@ -53,7 +45,7 @@
             const MAX_RETRIES = 5;
             const RETRY_DELAY_MS = 5000;
             let pc = null;
-            let timeoutId = null;
+            let receivedStream = false;
 
             const updateStatus = (icon, text) => {
                 statusElem.textContent = `${icon} ${text}`;
@@ -69,32 +61,34 @@
             try {
                 updateStatus('⏳', 'Подключение...');
                 const webrtcConfResponse = await fetch('/get_webrtc_config/');
-                if (!webrtcConfResponse.ok) {
-                    throw new Error('Failed to fetch WebRTC config');
-                }
+                if (!webrtcConfResponse.ok) throw new Error('Ошибка получения конфигурации WebRTC');
 
                 const webrtcConf = await webrtcConfResponse.json();
                 pc = new RTCPeerConnection(webrtcConf);
 
                 pc.addTransceiver('video', { direction: 'recvonly' });
 
+                // ⏰ Таймер: если через 10 сек нет потока — считаем ошибкой
+                const timeout = setTimeout(() => {
+                    if (!receivedStream) {
+                        updateStatus('🔴', 'Нет потока. Повтор...');
+                        pc.close();
+                        reconnect();
+                    }
+                }, 10000);
+
                 pc.ontrack = event => {
                     if (video.srcObject !== event.streams[0]) {
                         video.srcObject = event.streams[0];
+                        receivedStream = true;
+                        clearTimeout(timeout);
                         updateStatus('🟢', 'Поток активен');
-
-                        if (timeoutId) clearTimeout(timeoutId);
-                        timeoutId = setTimeout(() => {
-                            updateStatus('🔴', 'Нет данных. Переподключение...');
-                            pc.close();
-                            reconnect();
-                        }, 15000); // если ничего не пришло 15 сек — считаем "мертвым"
                     }
                 };
 
                 pc.onconnectionstatechange = () => {
                     const state = pc.connectionState;
-                    if (state === 'disconnected' || state === 'failed' || state === 'closed') {
+                    if (['disconnected', 'failed', 'closed'].includes(state)) {
                         updateStatus('🔴', 'Потеря соединения');
                         pc.close();
                         reconnect();
@@ -103,6 +97,7 @@
 
                 const offer = await pc.createOffer();
                 await pc.setLocalDescription(offer);
+
                 const response = await fetch(`/webrtc/${cameraPath}/whep`, {
                     method: "POST",
                     headers: {
@@ -113,7 +108,7 @@
                 });
 
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    throw new Error(`WHEP ответ с ошибкой: ${response.status}`);
                 }
 
                 const answerSdp = await response.text();
@@ -133,8 +128,8 @@
             startWebRTC("cam_entrance_video", "cam_entrance");
             startWebRTC("cam_b_entrance_video", "cam_back_entrance");
         });
-
     </script>
+
 
     {#    <script>#}
     {#        async function startWebRTC(videoElemId, cameraPath) {#}
