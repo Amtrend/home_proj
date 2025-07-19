@@ -635,6 +635,12 @@ h1, h2, h3, h4, h5, h6, p, a {
     background-color: black;
 }
 
+.stream-status {
+    font-size: 14px;
+    margin-left: 5px;
+    color: #9292e7;
+}
+
 @media (max-width: 992px) {
     .livecam_page {
         width: auto;
