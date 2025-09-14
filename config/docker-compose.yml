@@ -1,20 +1,20 @@
 version: '3.3'
 services:
-  svapp:
-    restart: unless-stopped
-    container_name: svapp
-    build:
-      context: .
-      dockerfile: dockerfiles/docker_sva.conf
-    command: python ./main.py
-    volumes:
-      - ../code_save_video_app:/code_app
-      - ../media/archive/cam_entrance:/code_app/media_files
-      - ../logs/svapp:/code_app/logs
-    networks:
-      - home_default
-    env_file:
-      - .env
+#  svapp:
+#    restart: unless-stopped
+#    container_name: svapp
+#    build:
+#      context: .
+#      dockerfile: dockerfiles/docker_sva.conf
+#    command: python ./main.py
+#    volumes:
+#      - ../code_save_video_app:/code_app
+#      - ../media/archive/cam_entrance:/code_app/media_files
+#      - ../logs/svapp:/code_app/logs
+#    networks:
+#      - home_default
+#    env_file:
+#      - .env
 #  csapp:
 #    restart: unless-stopped
 #    container_name: csapp
@@ -153,27 +153,29 @@ services:
 #      - home_default
 #    env_file:
 #      - .env
-  svbeapp:
-    restart: unless-stopped
-    container_name: svbeapp
-    build:
-      context: .
-      dockerfile: dockerfiles/docker_sva.conf
-    command: python ./main.py
-    volumes:
-      - ../code_be_save_video_app:/code_app
-      - ../media/archive/cam_b_entrance:/code_app/media_files
-      - ../logs/svbeapp:/code_app/logs
-    networks:
-      - home_default
-    env_file:
-      - .env
+#  svbeapp:
+#    restart: unless-stopped
+#    container_name: svbeapp
+#    build:
+#      context: .
+#      dockerfile: dockerfiles/docker_sva.conf
+#    command: python ./main.py
+#    volumes:
+#      - ../code_be_save_video_app:/code_app
+#      - ../media/archive/cam_b_entrance:/code_app/media_files
+#      - ../logs/svbeapp:/code_app/logs
+#    networks:
+#      - home_default
+#    env_file:
+#      - .env
   mediamtx:
     image: bluenviron/mediamtx:1.13.0
     container_name: mediamtx
     restart: unless-stopped
     volumes:
       - ./mediamtx/mediamtx.yml:/mediamtx.yml
+      - ../media/archive/cam_entrance:/recordings/cam_entrance
+      - ../media/archive/cam_b_entrance:/recordings/cam_back_entrance
     command: ["/mediamtx.yml"]
     networks:
       - home_default
