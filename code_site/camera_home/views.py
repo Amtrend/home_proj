@@ -27,7 +27,7 @@ MODEL_CAMERA_MAP = {
         'dir_path': os.path.join(MEDIA_ROOT, 'archive', 'cam_entrance'),
     },
     'cam_back_entrance': {
-        'model': CameraBackEntranceSaveVideos,
+        'model': CameraBEntranceSaveVideos,
         'upload_to': 'archive/cam_b_entrance',
         'dir_path': os.path.join(MEDIA_ROOT, 'archive', 'cam_b_entrance'),
     }
