@@ -15,6 +15,7 @@ urlpatterns = [
     # path('archive/<str:cam>/<int:pk>/', streaming_video, name='stream_video'),
     path('archive/<str:cam>/<int:pk>/', show_archive_video, name='show_archive_video'),
     path('download/<str:cam>/<int:pk>/', download_video, name='download_video'),
+    path('webrtc/save_hook/', webrtc_save_hook, name='webrtc_save_hook'),
     path('sensors/', sensors_resp_page, name='sensors_resp'),
     path('auth_check_webrtc/', auth_check_webrtc, name='auth_check_webrtc'),
     path('get_webrtc_config/', get_webrtc_config, name='get_webrtc_config'),
