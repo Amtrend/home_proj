@@ -260,16 +260,11 @@ def rotate_archive(archive_dir, model_class, size_limit_bytes):
 
 @csrf_exempt
 def webrtc_save_hook(request):
-    if request.method != 'POST':
+    if request.method != 'GET':
         return JsonResponse({'error': 'Method not allowed'}, status=405)
 
-    try:
-        data = json.loads(request.body)
-    except json.JSONDecodeError:
-        return JsonResponse({'error': 'Invaild json'}, status=400)
-
-    path = data.get('path')
-    filename = data.get('filename')
+    path = request.GET.get('path')
+    filename = request.GET.get('filename')
 
     if not path or not filename:
         return JsonResponse({'error': 'Missing path or filename'}, status=400)
@@ -302,6 +297,7 @@ def webrtc_save_hook(request):
     return JsonResponse({
         'status': 'success',
         'record_id': video_record.id,
+        'file': filename,
         'path': path,
-        'rotation_triggered': True
+        'method': 'GET'
     })
