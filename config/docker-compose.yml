@@ -169,17 +169,17 @@ services:
 #    env_file:
 #      - .env
   mediamtx:
-#    image: bluenviron/mediamtx:1.13.0
-    build:
-      context: .
-      dockerfile: dockerfiles/docker_mediamtx.conf
+    image: bluenviron/mediamtx:1.13.0
+#    build:
+#      context: .
+#      dockerfile: dockerfiles/docker_mediamtx.conf
     container_name: mediamtx
     restart: unless-stopped
     volumes:
-#      - ./mediamtx/mediamtx.yml:/mediamtx.yml
+      - ./mediamtx/mediamtx.yml:/mediamtx.yml
       - ../media/archive/cam_entrance:/recordings/cam_entrance
       - ../media/archive/cam_b_entrance:/recordings/cam_back_entrance
-#    command: ["/mediamtx.yml"]
+    command: ["/mediamtx.yml"]
     networks:
       - home_default
     env_file:
