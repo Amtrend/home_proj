@@ -176,10 +176,10 @@ services:
     container_name: mediamtx
     restart: unless-stopped
     volumes:
-      - ./mediamtx/mediamtx.yml:/mediamtx.yml
+#      - ./mediamtx/mediamtx.yml:/mediamtx.yml
       - ../media/archive/cam_entrance:/recordings/cam_entrance
       - ../media/archive/cam_b_entrance:/recordings/cam_back_entrance
-    command: ["/mediamtx.yml"]
+#    command: ["/mediamtx.yml"]
     networks:
       - home_default
     env_file:
