@@ -169,7 +169,10 @@ services:
 #    env_file:
 #      - .env
   mediamtx:
-    image: bluenviron/mediamtx:1.13.0
+#    image: bluenviron/mediamtx:1.13.0
+    build:
+      context: .
+      dockerfile: dockerfiles/docker_mediamtx.conf
     container_name: mediamtx
     restart: unless-stopped
     volumes:
