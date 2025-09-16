@@ -1,4 +1,3 @@
-import logging
 import os
 import json
 
@@ -17,21 +16,6 @@ from django.http.response import StreamingHttpResponse, JsonResponse, FileRespon
 from django.views.decorators.csrf import csrf_exempt
 from smart_home.settings import STUN_DOMAIN, RTCUSER, RTCPASS, MEDIA_ROOT
 
-
-_logger = logging.getLogger(__name__)
-
-MODEL_CAMERA_MAP = {
-    'cam_entrance': {
-        'model': CameraEntranceSaveVideos,
-        'upload_to': 'archive/cam_entrance',
-        'dir_path': os.path.join(MEDIA_ROOT, 'archive', 'cam_entrance'),
-    },
-    'cam_back_entrance': {
-        'model': CameraBEntranceSaveVideos,
-        'upload_to': 'archive/cam_b_entrance',
-        'dir_path': os.path.join(MEDIA_ROOT, 'archive', 'cam_b_entrance'),
-    }
-}
 
 @login_required
 def streaming_video(request, cam, pk):
@@ -187,7 +171,6 @@ def auth_check_webrtc(request):
         return HttpResponse("OK", status=200)
     return HttpResponse("Unauthorized", status=401)
 
-
 @login_required
 def get_webrtc_config(request):
     return JsonResponse({
@@ -225,39 +208,6 @@ def show_archive_video(request, cam, pk):
     response['X-Accel-Redirect'] = f'/protected_media/{relative_path.as_posix()}'
     return response
 
-def rotate_archive(archive_dir, model_class, size_limit_bytes):
-    if not os.path.exists(archive_dir):
-        return
-
-    files = [f for f in os.listdir(archive_dir) if f.endswith('.mp4')]
-    files_with_paths = [(f, os.path.join(archive_dir, f)) for f in files]
-    files_with_paths.sort(key=lambda x: os.path.getmtime(x[1]))
-
-    current_size = sum(os.path.getsize(fp) for _, fp in files_with_paths)
-    if current_size <= size_limit_bytes:
-        return
-
-    for filename, filepath in files_with_paths:
-        if current_size <= size_limit_bytes:
-            break
-
-        file_size = os.path.getsize(filepath)
-
-        try:
-            os.unlink(filepath)
-        except Exception as e:
-            _logger.error(f'Failed to delete {filepath}: {e}')
-            continue
-
-        try:
-            record = model_class.objects.filter(video__endswith=filename).first()
-            if record:
-                record.delete()
-        except Exception as e:
-            _logger.error(f'Failed to delete db record for {filename}: {e}')
-
-        current_size -= file_size
-
 @csrf_exempt
 def webrtc_save_hook(request):
     if request.method != 'GET':
@@ -269,34 +219,52 @@ def webrtc_save_hook(request):
     if not path or not filename:
         return JsonResponse({'error': 'Missing path or filename'}, status=400)
 
-    if path not in MODEL_CAMERA_MAP:
-        return JsonResponse({'error': f'Unknown path {path}'}, status=400)
-
-    config = MODEL_CAMERA_MAP[path]
-    model_class = config['model']
-    upload_to = config['upload_to']
-    archive_dir = config['dir_path']
-    base_name = os.path.basename(filename)
-    title = base_name.replace('.mp4', '')
-
-    try:
-        start_recording = dt.strptime(title, '%Y-%m-%d_%H-%M-%S') + timedelta(hours=3)
-    except ValueError:
-        return JsonResponse({'error': 'Cannot parse timestamp from filename'}, status=400)
-
-    video_record = model_class(title=title, video=f'{upload_to}/{base_name}', start_recording=start_recording)
-    video_record.save()
-
-    try:
-        size_limit_bytes = int(os.getenv('SIZE_LIMIT_OF_DIR', 37580963840))
-        rotate_archive(archive_dir=archive_dir, model_class=model_class, size_limit_bytes=size_limit_bytes)
-    except Exception as e:
-        _logger.error(f'Rotation failed for {path}: {e}')
+    save_webrtc_video_task.delay(path=path, filename=filename)
 
     return JsonResponse({
-        'status': 'success',
-        'record_id': video_record.id,
+        'status': 'queued',
         'file': filename,
         'path': path,
-        'method': 'GET'
     })
+# @csrf_exempt
+# def webrtc_save_hook(request):
+#     if request.method != 'GET':
+#         return JsonResponse({'error': 'Method not allowed'}, status=405)
+#
+#     path = request.GET.get('path')
+#     filename = request.GET.get('filename')
+#
+#     if not path or not filename:
+#         return JsonResponse({'error': 'Missing path or filename'}, status=400)
+#
+#     if path not in MODEL_CAMERA_MAP:
+#         return JsonResponse({'error': f'Unknown path {path}'}, status=400)
+#
+#     config = MODEL_CAMERA_MAP[path]
+#     model_class = config['model']
+#     upload_to = config['upload_to']
+#     archive_dir = config['dir_path']
+#     base_name = os.path.basename(filename)
+#     title = base_name.replace('.mp4', '')
+#
+#     try:
+#         start_recording = dt.strptime(title, '%Y-%m-%d_%H-%M-%S') + timedelta(hours=3)
+#     except ValueError:
+#         return JsonResponse({'error': 'Cannot parse timestamp from filename'}, status=400)
+#
+#     video_record = model_class(title=title, video=f'{upload_to}/{base_name}', start_recording=start_recording)
+#     video_record.save()
+#
+#     try:
+#         size_limit_bytes = int(os.getenv('SIZE_LIMIT_OF_DIR', 37580963840))
+#         rotate_archive(archive_dir=archive_dir, model_class=model_class, size_limit_bytes=size_limit_bytes)
+#     except Exception as e:
+#         _logger.error(f'Rotation failed for {path}: {e}')
+#
+#     return JsonResponse({
+#         'status': 'success',
+#         'record_id': video_record.id,
+#         'file': filename,
+#         'path': path,
+#         'method': 'GET'
+#     })
