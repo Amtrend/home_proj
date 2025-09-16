@@ -8,7 +8,7 @@
             <div class="arch_cam_videos_blocks">
                 {% for ce_video in ce_videos %}
                     <div class="arch_cam_video_block">
-                        <p class="arch_cam_video_block-title">{{ ce_video.start_recording|date:"d.m.Y H:i:s" }} - {{ ce_video.created_at|date:"H:i:s" }}</p>
+                        <p class="arch_cam_video_block-title">{{ ce_video.start_recording|localtime|date:"d.m.Y H:i:s" }} - {{ ce_video.created_at|localtime|date:"H:i:s" }}</p>
                         <video class="arch_cam_video_block-video" controls muted preload="none">
 {#                            <source src="{% url 'stream_video' cam ce_video.id %}" type="video/mp4"/>#}
                             <source src="{% url 'show_archive_video' cam ce_video.id %}" type="video/mp4"/>
