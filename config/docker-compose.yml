@@ -127,6 +127,7 @@ services:
     volumes:
       - ../code_site:/code
       - ../logs/celery:/code/logs
+      - ../media:/media
     networks:
       - home_default
     depends_on:
