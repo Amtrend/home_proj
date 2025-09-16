@@ -7,7 +7,7 @@ from .models import *
 from celery import shared_task
 from django.core.cache import cache
 from requests.auth import HTTPDigestAuth
-from smart_home.settings import RTSP_LINK, TG_BOT_API, TG_CHAT_ID, MAIN_CAMERA_PASS, MAIN_CAMERA_USER, MAIN_CAMERA_SNAPSHOT_LINK
+from smart_home.settings import RTSP_LINK, TG_BOT_API, TG_CHAT_ID, MAIN_CAMERA_PASS, MAIN_CAMERA_USER, MAIN_CAMERA_SNAPSHOT_LINK, MEDIA_ROOT
 
 DEBOUNCE_SECONDS = 7
 PHOTO_FILENAME = 'ae_photo.jpeg'
