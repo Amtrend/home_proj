@@ -280,12 +280,11 @@ def webrtc_save_hook(request):
     title = base_name.replace('.mp4', '')
 
     try:
-        dt_str = '_'.join(base_name.split('_')[:2]) + ' ' + '_'.join(base_name.split('_')[2:]).replace('.mp4', '')
-        start_recording = dt.strptime(dt_str, '%Y-%m-%d %H:%M:%S')
+        start_recording = dt.strptime(title, '%Y-%m-%d_%H-%M-%S')
     except ValueError:
         return JsonResponse({'error': 'Cannot parse timestamp from filename'}, status=400)
 
-    video_record = model_class(title=title, video=f'{upload_to}/{base_name}', start_recording=start_recording)
+    video_record = model_class(title=title, video=base_name, start_recording=start_recording)
     video_record.save()
 
     try:
