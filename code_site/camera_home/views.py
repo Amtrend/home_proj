@@ -284,7 +284,7 @@ def webrtc_save_hook(request):
     except ValueError:
         return JsonResponse({'error': 'Cannot parse timestamp from filename'}, status=400)
 
-    video_record = model_class(title=title, video=base_name, start_recording=start_recording)
+    video_record = model_class(title=title, video=f'{upload_to}/{base_name}', start_recording=start_recording)
     video_record.save()
 
     try:
