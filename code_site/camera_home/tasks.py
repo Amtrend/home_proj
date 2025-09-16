@@ -3,11 +3,16 @@ import os
 import requests
 import subprocess
 
+from datetime import datetime, timedelta
+from requests.auth import HTTPDigestAuth
+
 from .models import *
 from celery import shared_task
+
 from django.core.cache import cache
-from requests.auth import HTTPDigestAuth
+
 from smart_home.settings import RTSP_LINK, TG_BOT_API, TG_CHAT_ID, MAIN_CAMERA_PASS, MAIN_CAMERA_USER, MAIN_CAMERA_SNAPSHOT_LINK, MEDIA_ROOT
+
 
 DEBOUNCE_SECONDS = 7
 PHOTO_FILENAME = 'ae_photo.jpeg'
@@ -184,7 +189,7 @@ def save_webrtc_video_task(path, filename):
     title = base_name.replace('.mp4', '')
 
     try:
-        start_recording = dt.strptime(title, '%Y-%m-%d_%H-%M-%S') + timedelta(hours=3)
+        start_recording = datetime.strptime(title, '%Y-%m-%d_%H-%M-%S') + timedelta(hours=3)
     except ValueError:
         _logger.error(f'Cannot parse timestamp from filename: {filename}')
         return f'Cannot parse timestamp from filename: {filename}'
