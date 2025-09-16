@@ -2,7 +2,7 @@ import logging
 import os
 import json
 
-from datetime import datetime as dt
+from datetime import datetime as dt, timedelta
 from pathlib import Path
 
 from .forms import *
@@ -280,7 +280,7 @@ def webrtc_save_hook(request):
     title = base_name.replace('.mp4', '')
 
     try:
-        start_recording = dt.strptime(title, '%Y-%m-%d_%H-%M-%S')
+        start_recording = dt.strptime(title, '%Y-%m-%d_%H-%M-%S') + timedelta(hours=3)
     except ValueError:
         return JsonResponse({'error': 'Cannot parse timestamp from filename'}, status=400)
 
