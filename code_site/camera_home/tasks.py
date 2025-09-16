@@ -3,6 +3,7 @@ import os
 import requests
 import subprocess
 
+from .models import *
 from celery import shared_task
 from django.core.cache import cache
 from requests.auth import HTTPDigestAuth
