@@ -121,9 +121,9 @@ def cam_archive_page(request, cam):
     if from_date:
         queryset = queryset.filter(start_recording__gte=from_date)
     if to_date:
-        queryset = queryset.filter(start_recording__lte=to_date)
+        queryset = queryset.filter(created_at__lte=to_date)
 
-    ce_videos = queryset.order_by('-start_recording')
+    ce_videos = queryset.order_by('-created_at')
 
     response_data = {
         "ce_videos": ce_videos,
