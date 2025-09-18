@@ -5,6 +5,12 @@
     <section id="archive_page">
         <div class="archive_page">
             <p class="title_archive_camera">{{ p_title }}</p>
+            <form method="get" id="filter_form" style="margin-bottom: 20px;">
+                <label>С: <input type="datetime-local" name="from_date" value="{{ request.GET.from_date }}"></label>
+                <label>По: <input type="datetime-local" name="to_date" value="{{ request.GET.to_date }}"></label>
+                <button type="submit">Фильтровать</button>
+                <a href="{% url 'cam_archive' cam %}">Сбросить</a>
+            </form>
             <div class="arch_cam_videos_blocks">
                 {% for ce_video in ce_videos %}
                     <div class="arch_cam_video_block">

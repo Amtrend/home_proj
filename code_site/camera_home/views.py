@@ -92,24 +92,41 @@ def cams_archive_page(request):
 @login_required
 def cam_archive_page(request, cam):
     if cam == 'entry':
-        ce_videos = CameraEntranceSaveVideos.objects.all()
+        queryset = CameraEntranceSaveVideos.objects.all()
         p_title = "Архив камеры у главного входа"
     if cam == 'b_entry':
-        ce_videos = CameraBEntranceSaveVideos.objects.all()
+        queryset = CameraBEntranceSaveVideos.objects.all()
         p_title = "Архив камеры у входа на заднем дворе"
+    else:
+        raise Http404()
+
+    from_date_str = request.GET.get('from_date')
+    to_date_str = request.GET.get('to_date')
+
+    if from_date_str:
+        from_date = parse_datetime(from_date_str)
+        if from_date:
+            queryset = queryset.filter(start_recording__gte=from_date)
+
+    if to_date_str:
+        to_date = parse_datetime(to_date_str)
+        if to_date:
+            queryset = queryset.filter(start_recording__lte=to_date)
+
+    ce_videos = queryset.order_by('-start_recording')
+
     response_data = {
         "ce_videos": ce_videos,
         "p_title": p_title,
         "cam": cam,
     }
+
     if request.method == 'POST':
         if 'del_video_aus_yes' in request.POST:
             target_video_id = request.POST.get("del_video_aus_yes")
-            if cam == 'entry':
-                target_video = CameraEntranceSaveVideos.objects.get(id=target_video_id)
-            if cam == 'b_entry':
-                target_video = CameraBEntranceSaveVideos.objects.get(id=target_video_id)
-            target_video.delete()
+            target_video = queryset.filter(id=target_video_id).first()
+            if target_video:
+                target_video.delete()
             return JsonResponse({'answer': target_video_id}, status=200)
     return render(request, 'camera_home/cam_archive.html', response_data)
 
