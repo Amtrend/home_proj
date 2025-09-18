@@ -601,18 +601,18 @@ h1, h2, h3, h4, h5, h6, p, a {
 
 #filter_form {
     display: flex;
-    flex-direction: column;
     align-items: center;
     margin-bottom: 20px;
+    margin-top: 20px;
     font-family: Montserrat, sans-serif;
 }
 
 #filter_form .filter_row {
     display: flex;
-    gap: 15px;
+    gap: 10px;
     flex-wrap: wrap;
     justify-content: center;
-    margin-bottom: 10px;
+    align-items: center;
 }
 
 #filter_form label {
@@ -628,13 +628,6 @@ h1, h2, h3, h4, h5, h6, p, a {
     border: 1px solid #9292e7;
     border-radius: 5px;
     margin-top: 5px;
-}
-
-#filter_form .filter_buttons {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    justify-content: center;
 }
 
 #filter_form .filter_btn {
@@ -667,18 +660,15 @@ h1, h2, h3, h4, h5, h6, p, a {
 
 @media (max-width: 992px) {
     #filter_form .filter_row {
-        flex-direction: column;
+        flex-direction: row;
         align-items: center;
+        gap: 10px;
     }
 
-    #filter_form .filter_buttons {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    #filter_form .filter_btn, #filter_form .reset_btn {
-        width: 100%;
-        max-width: 200px;
+    #filter_form label,
+    #filter_form .filter_btn,
+    #filter_form .reset_btn {
+        flex: 0 1 auto;
     }
 }
 

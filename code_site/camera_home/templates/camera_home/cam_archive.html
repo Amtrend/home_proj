@@ -9,8 +9,6 @@
                 <div class="filter_row">
                     <label>С: <input type="datetime-local" name="from_date" value="{{ request.GET.from_date }}"></label>
                     <label>По: <input type="datetime-local" name="to_date" value="{{ request.GET.to_date }}"></label>
-                </div>
-                <div class="filter_buttons">
                     <button type="submit" class="filter_btn">Фильтровать</button>
                     <a href="{% url 'cam_archive' cam %}" class="filter_btn reset_btn">Сбросить</a>
                 </div>
