@@ -2,6 +2,45 @@
 {% load static %}
 {% block title %}{{ p_title }}{% endblock %}
 {% block content %}
+    <style>
+#filter_form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+#filter_form label {
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+}
+
+#filter_form input[type="datetime-local"] {
+    padding: 5px;
+    font-size: 14px;
+}
+
+#filter_form button, #filter_form a {
+    padding: 6px 12px;
+    font-size: 14px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#filter_form a {
+    background-color: #eee;
+    border: 1px solid #ccc;
+    color: #333;
+}
+
+#filter_form button {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+}
+</style>
+
     <section id="archive_page">
         <div class="archive_page">
             <p class="title_archive_camera">{{ p_title }}</p>

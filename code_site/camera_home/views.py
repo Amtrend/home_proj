@@ -94,7 +94,7 @@ def cam_archive_page(request, cam):
     if cam == 'entry':
         queryset = CameraEntranceSaveVideos.objects.all()
         p_title = "Архив камеры у главного входа"
-    if cam == 'b_entry':
+    elif cam == 'b_entry':
         queryset = CameraBEntranceSaveVideos.objects.all()
         p_title = "Архив камеры у входа на заднем дворе"
     else:
@@ -103,15 +103,25 @@ def cam_archive_page(request, cam):
     from_date_str = request.GET.get('from_date')
     to_date_str = request.GET.get('to_date')
 
+    from_date = None
+    to_date = None
+
     if from_date_str:
-        from_date = parse_datetime(from_date_str)
-        if from_date:
-            queryset = queryset.filter(start_recording__gte=from_date)
+        try:
+            from_date = datetime.strptime(from_date_str, "%Y-%m-%dT%H:%M")
+        except ValueError:
+            from_date = None
 
     if to_date_str:
-        to_date = parse_datetime(to_date_str)
-        if to_date:
-            queryset = queryset.filter(start_recording__lte=to_date)
+        try:
+            to_date = datetime.strptime(to_date_str, "%Y-%m-%dT%H:%M")
+        except ValueError:
+            to_date = None
+
+    if from_date:
+        queryset = queryset.filter(start_recording__gte=from_date)
+    if to_date:
+        queryset = queryset.filter(start_recording__lte=to_date)
 
     ce_videos = queryset.order_by('-start_recording')
 
