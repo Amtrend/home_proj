@@ -588,20 +588,10 @@ h1, h2, h3, h4, h5, h6, p, a {
     display: none;
 }
 
-@media (max-width: 992px) {
-    .archive_page {
-        width: auto;
-        margin-top: 85px;
-    }
-    .arch_cam_video_block-video {
-        width: 100%;
-        max-width: 350px;
-    }
-}
-
 #filter_form {
     display: flex;
     align-items: center;
+    justify-content: center;
     margin-bottom: 20px;
     margin-top: 20px;
     font-family: Montserrat, sans-serif;
@@ -641,6 +631,7 @@ h1, h2, h3, h4, h5, h6, p, a {
     text-decoration: none;
     cursor: pointer;
     transition: 0.2s;
+    align-self: flex-end;
 }
 
 #filter_form .filter_btn:hover {
@@ -659,6 +650,15 @@ h1, h2, h3, h4, h5, h6, p, a {
 }
 
 @media (max-width: 992px) {
+    .archive_page {
+        width: auto;
+        margin-top: 85px;
+    }
+    .arch_cam_video_block-video {
+        width: 100%;
+        max-width: 350px;
+    }
+
     #filter_form .filter_row {
         flex-direction: row;
         align-items: center;
@@ -671,7 +671,6 @@ h1, h2, h3, h4, h5, h6, p, a {
         flex: 0 1 auto;
     }
 }
-
 
 /* ========== LIVECAMS PAGE ========== */
 
