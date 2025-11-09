@@ -15,17 +15,29 @@
                 <video id="cam_b_entrance_video" class="livecam_video_block-video" muted playsinline controls></video>
                 <div class="stream-status" id="status_cam_back_entrance">⏳ Подключение...</div>
             </div>
+            <div class="livecam_page-block">
+                <p class="title_livecam">Камера в спальне</p>
+                <video id="cam_baby" class="livecam_video_block-video" playsinline controls></video>
+                <div class="stream-status" id="status_cam_baby">⏳ Подключение...</div>
+            </div>
         </div>
     </section>
 
     <script>
-        async function startWebRTC(videoElemId, cameraPath, retryCount = 0) {
+        async function startWebRTC(videoElemId, cameraPath, withAudio = false, retryCount = 0) {
             const video = document.getElementById(videoElemId);
             const statusElem = document.getElementById(`status_${cameraPath}`);
 
             if (!video || !statusElem) {
                 console.error(`[${cameraPath}] Video or status element not found`);
                 return;
+            }
+
+            if (withAudio) {
+                video.muted = false;
+                video.volume = 0;
+            } else {
+                video.muted = true;
             }
 
             const MAX_RETRIES = 5;
@@ -40,7 +52,7 @@
             const reconnect = () => {
                 updateStatus('🔴', 'Поток потерян. Переподключение...');
                 setTimeout(() => {
-                    startWebRTC(videoElemId, cameraPath, retryCount + 1);
+                    startWebRTC(videoElemId, cameraPath, withAudio, retryCount + 1);
                 }, RETRY_DELAY_MS);
             };
 
@@ -53,6 +65,10 @@
                 pc = new RTCPeerConnection(webrtcConf);
 
                 pc.addTransceiver('video', { direction: 'recvonly' });
+
+                if (withAudio) {
+                    pc.addTransceiver('audio', { direction: 'recvonly' });
+                }
 
                 const timeout = setTimeout(() => {
                     if (!receivedStream) {
@@ -111,8 +127,9 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-            startWebRTC("cam_entrance_video", "cam_entrance");
-            startWebRTC("cam_b_entrance_video", "cam_back_entrance");
+            startWebRTC("cam_entrance_video", "cam_entrance", false);
+            startWebRTC("cam_b_entrance_video", "cam_back_entrance", false);
+            startWebRTC("cam_baby", "cam_baby", true);
         });
     </script>
 {% endblock %}
