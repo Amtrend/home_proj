@@ -4,13 +4,10 @@
 {% block content %}
     <section id="main_page">
         <div class="main_page">
+                <a href="{% url 'livecams_feed' %}" class="main_page-chapter_link"><p class="main_page-chapter_text">Онлайн трансляция</p></a>
+                <a href="{% url 'cams_archive' %}" class="main_page-chapter_link"><p class="main_page-chapter_text">Архив</p></a>
             {% if request.user.is_superuser %}
-                <a href="{% url 'livecams_feed' %}" class="main_page-chapter_link"><p class="main_page-chapter_text">Онлайн трансляция</p></a>
-                <a href="{% url 'cams_archive' %}" class="main_page-chapter_link"><p class="main_page-chapter_text">Архив</p></a>
                 <a href="{% url 'settings' %}" class="main_page-chapter_link"><p class="main_page-chapter_text">Настройки</p></a>
-            {% else %}
-                <a href="{% url 'livecams_feed' %}" class="main_page-chapter_link"><p class="main_page-chapter_text">Онлайн трансляция</p></a>
-                <a href="{% url 'cams_archive' %}" class="main_page-chapter_link"><p class="main_page-chapter_text">Архив</p></a>
             {% endif %}
         </div>
     </section>

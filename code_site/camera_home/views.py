@@ -163,10 +163,6 @@ def settings_page(request):
                 ae_settings.off_at = None
                 ae_settings.save()
         return redirect('home')
-    # if 'settings_sens_rest' in request.POST:
-    #     print(request.POST)
-    #     return redirect('home')
-    #     # return render(request, 'camera_home/settings.html', response_data)
     return render(request, 'camera_home/settings.html', response_data)
 
 
