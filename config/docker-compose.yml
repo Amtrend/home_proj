@@ -180,6 +180,7 @@ services:
 #      - ./mediamtx/mediamtx.yml:/mediamtx.yml
       - ../media/archive/cam_entrance:/recordings/cam_entrance
       - ../media/archive/cam_b_entrance:/recordings/cam_back_entrance
+      - ../media/archive/cam_baby:/recordings/cam_baby
 #    command: ["/mediamtx.yml"]
     networks:
       - home_default
