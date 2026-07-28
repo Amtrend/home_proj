@@ -11,7 +11,7 @@ from celery import shared_task
 
 from django.core.cache import cache
 
-from smart_home.settings import RTSP_LINK, TG_BOT_API, TG_CHAT_ID, MAIN_CAMERA_PASS, MAIN_CAMERA_USER, MAIN_CAMERA_SNAPSHOT_LINK, MEDIA_ROOT
+from smart_home.settings import RTSP_LINK, TG_LINK, TG_BOT_API, TG_CHAT_ID, MAIN_CAMERA_PASS, MAIN_CAMERA_USER, MAIN_CAMERA_SNAPSHOT_LINK, MEDIA_ROOT
 
 
 DEBOUNCE_SECONDS = 7
@@ -83,7 +83,7 @@ def send_tg_msg_and_video(api_key, chat_id, text_msg, file):
     return response
 
 
-def send_tg_msg_and_photo(api_key, chat_id, text_msg, file):
+def send_tg_msg_and_photo(api_link, api_key, chat_id, text_msg, file):
     data_send = {
         'chat_id': chat_id,
         'caption': text_msg,
@@ -92,7 +92,7 @@ def send_tg_msg_and_photo(api_key, chat_id, text_msg, file):
     file_send = {
         'photo': open(file, 'rb'),
     }
-    response = requests.post(f'https://api.telegram.org/bot{api_key}/sendPhoto', data=data_send, files=file_send)
+    response = requests.post(f'{api_link}/bot{api_key}/sendPhoto', data=data_send, files=file_send)
     return response
 
 @shared_task(queue='for_alarm_entrance_task', name='main_entrance_alarm_task')
@@ -145,7 +145,7 @@ def go_alarm_entrance_task(targ_timesamp):
         save_ae_photo = subprocess.run(command, shell=True, capture_output=True)
         if save_ae_photo.returncode == 0:
             try:
-                send_tg_msg_and_photo(api_key=TG_BOT_API, chat_id=TG_CHAT_ID, text_msg=f'Движение у <b>главного входа</b> в {targ_timesamp}', file='ae_photo.jpeg')
+                send_tg_msg_and_photo(api_link=TG_LINK, api_key=TG_BOT_API, chat_id=TG_CHAT_ID, text_msg=f'Движение у <b>главного входа</b> в {targ_timesamp}', file='ae_photo.jpeg')
             except Exception as e:
                 print(f'ошибка при отправке фото - {e}')
             try:
