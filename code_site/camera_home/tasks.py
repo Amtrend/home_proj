@@ -116,6 +116,7 @@ def main_entrance_alarm_task(targ_timestamp):
 
             try:
                 send_tg_msg_and_photo(
+                    api_link=TG_LINK,
                     api_key=TG_BOT_API,
                     chat_id=TG_CHAT_ID,
                     text_msg=f'Движение у <b>главного входа</b> в {targ_timestamp}',
