@@ -1,35 +1,4 @@
-version: '3.3'
 services:
-#  svapp:
-#    restart: unless-stopped
-#    container_name: svapp
-#    build:
-#      context: .
-#      dockerfile: dockerfiles/docker_sva.conf
-#    command: python ./main.py
-#    volumes:
-#      - ../code_save_video_app:/code_app
-#      - ../media/archive/cam_entrance:/code_app/media_files
-#      - ../logs/svapp:/code_app/logs
-#    networks:
-#      - home_default
-#    env_file:
-#      - .env
-#  csapp:
-#    restart: unless-stopped
-#    container_name: csapp
-#    build:
-#      context: .
-#      dockerfile: dockerfiles/docker_csa.conf
-#    command: python ./main.py
-#    volumes:
-#      - ../code_stream_video_app:/code_app
-#      - ../media/stream/cam_entrance:/code_app/media_files
-#      - ../logs/csapp:/code_app/logs
-#    networks:
-#      - home_default
-#    env_file:
-#      - .env
   django:
     restart: unless-stopped
     container_name: django
@@ -69,17 +38,18 @@ services:
       # Common traefik labels
       - "traefik.enable=true"
       - "traefik.docker.network=traefik_external"
-      - "traefik.http.middlewares.home-redirect.redirectscheme.scheme=https"
-      # Router traefik labels for http hostname entrypoint
-      - "traefik.http.routers.http-home.middlewares=home-redirect@docker"
-      - "traefik.http.routers.http-home.rule=Host(`home.amtrend.ru`)"
-      - "traefik.http.routers.http-home.entrypoints=http"
-      - "traefik.http.routers.traefik-local.rule=Host(`192.168.0.9`)"
-      - "traefik.http.routers.traefik-local.entrypoints=http"
-      # Router traefik labels for https hostname entrypoint
-      - "traefik.http.routers.https-home.rule=Host(`home.amtrend.ru`)"
-      - "traefik.http.routers.https-home.tls.certResolver=le"
-      - "traefik.http.routers.https-home.entrypoints=https"
+      # HTTP -> HTTPS
+      - "traefik.http.routers.home-http.entrypoints=http"
+      - "traefik.http.routers.home-http.rule=Host(`home.amtrend.ru`)"
+      - "traefik.http.routers.home-http.middlewares=http2https@file"
+      # HTTPS
+      - "traefik.http.routers.home.entrypoints=https"
+      - "traefik.http.routers.home.rule=Host(`home.amtrend.ru`)"
+      - "traefik.http.routers.home.tls=true"
+      - "traefik.http.routers.home.tls.certresolver=le"
+      # Local IP (HTTP)
+      - "traefik.http.routers.home-local.entrypoints=http"
+      - "traefik.http.routers.home-local.rule=Host(`192.168.0.9`)"
   db:
     image: mariadb
     restart: unless-stopped
@@ -89,20 +59,6 @@ services:
       - ../db/workdb:/var/lib/mysql
     networks:
       - home_default
-    #  phpmyadmin:
-    #    image: phpmyadmin
-    #    container_name: phpmyadmin
-    #    links:
-    #      - db
-    #    environment:
-    #      PMA_ARBITARY: 1
-    #      PMA_HOST: db
-    #      PMA_PORT: 3306
-    #    restart: on-failure
-    #    ports:
-    #      - "8081:80"
-    #    depends_on:
-    #      - db
     env_file:
       - .env
   redis:
@@ -139,49 +95,16 @@ services:
       - db
     env_file:
       - .env
-#  csbeapp:
-#    restart: unless-stopped
-#    container_name: csbeapp
-#    build:
-#      context: .
-#      dockerfile: dockerfiles/docker_csa.conf
-#    command: python ./main.py
-#    volumes:
-#      - ../code_be_stream_video_app:/code_app
-#      - ../media/stream/cam_b_entrance:/code_app/media_files
-#      - ../logs/csbeapp:/code_app/logs
-#    networks:
-#      - home_default
-#    env_file:
-#      - .env
-#  svbeapp:
-#    restart: unless-stopped
-#    container_name: svbeapp
-#    build:
-#      context: .
-#      dockerfile: dockerfiles/docker_sva.conf
-#    command: python ./main.py
-#    volumes:
-#      - ../code_be_save_video_app:/code_app
-#      - ../media/archive/cam_b_entrance:/code_app/media_files
-#      - ../logs/svbeapp:/code_app/logs
-#    networks:
-#      - home_default
-#    env_file:
-#      - .env
   mediamtx:
-#    image: bluenviron/mediamtx:1.13.0
     build:
       context: .
       dockerfile: dockerfiles/docker_mediamtx.conf
     container_name: mediamtx
     restart: unless-stopped
     volumes:
-#      - ./mediamtx/mediamtx.yml:/mediamtx.yml
       - ../media/archive/cam_entrance:/recordings/cam_entrance
       - ../media/archive/cam_b_entrance:/recordings/cam_back_entrance
       - ../media/archive/cam_baby:/recordings/cam_baby
-#    command: ["/mediamtx.yml"]
     networks:
       - home_default
     env_file:
